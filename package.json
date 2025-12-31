@@ -1,0 +1,74 @@
+{
+  "name": "taskasaurus",
+  "displayName": "Taskasaurus",
+  "version": "1.0.0",
+  "description": "A status-bar task launcher strip for repositories with many tasks",
+  "keywords": [
+    "menu",
+    "tasks",
+    "task runner",
+    "status bar",
+    "launcher",
+    "productivity"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "bugs": {
+    "url": "https://github.com/tangentlin/taskasaurus/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tangentlin/taskasaurus"
+  },
+  "publisher": "tangent",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20 --sourcemap --main-fields=module,main",
+    "watch": "pnpm run build --sourcemap --watch",
+    "check:lint": "oxlint src",
+    "check:style": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "test": "vitest run",
+    "package": "pnpm run build && vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.107.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.19.12",
+    "oxfmt": "^0.21.0",
+    "oxlint": "^1.36.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "taskasaurus.clickNode",
+        "title": "Taskasaurus: Click Node"
+      },
+      {
+        "command": "taskasaurus.refresh",
+        "title": "Taskasaurus: Refresh Tasks"
+      },
+      {
+        "command": "taskasaurus.collapse",
+        "title": "Taskasaurus: Collapse All Groups"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.vscode/tasks.json"
+  ],
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  }
+}
