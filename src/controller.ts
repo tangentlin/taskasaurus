@@ -1,12 +1,15 @@
 import * as vscode from "vscode";
-import type { RootNode, NodeId, UIState, TaskKey, Node } from "./types";
+import type { RootNode, NodeId, UIState, TaskKey, Node, TaskFeedback } from "./types";
 import { buildHierarchy, disambiguateLabels } from "./hierarchy";
-import { resolveTask } from "./taskKey";
+import { createTaskKey, resolveTask, taskKeyToId } from "./taskKey";
 import { StatusBarRenderer } from "./statusBar";
 import { loadTasksJsonData } from "./iconLoader";
 
 const AUTO_COLLAPSE_TIMEOUT_MS = 10_000;
 const REFRESH_DEBOUNCE_MS = 250;
+const FEEDBACK_DISPLAY_MS = 2_000;
+
+export type FeedbackMap = Map<string, TaskFeedback>;
 
 export class TaskasaurusController {
   private uiState: UIState = {};
@@ -14,9 +17,65 @@ export class TaskasaurusController {
   private tasks: vscode.Task[] = [];
   private readonly renderer: StatusBarRenderer;
   private refreshTimer?: ReturnType<typeof setTimeout>;
+  private readonly feedbackMap: FeedbackMap = new Map();
+  private readonly disposables: vscode.Disposable[] = [];
 
   constructor() {
     this.renderer = new StatusBarRenderer();
+    this.setupTaskListeners();
+  }
+
+  private setupTaskListeners(): void {
+    // Listen for task process start
+    this.disposables.push(
+      vscode.tasks.onDidStartTaskProcess((e) => {
+        this.handleTaskStart(e.execution.task);
+      }),
+    );
+
+    // Listen for task process end
+    this.disposables.push(
+      vscode.tasks.onDidEndTaskProcess((e) => {
+        this.handleTaskEnd(e.execution.task, e.exitCode);
+      }),
+    );
+  }
+
+  private handleTaskStart(task: vscode.Task): void {
+    const taskKey = createTaskKey(task);
+    const keyId = taskKeyToId(taskKey);
+
+    // Clear any existing timer for this task
+    const existing = this.feedbackMap.get(keyId);
+    if (existing?.timer) {
+      clearTimeout(existing.timer);
+    }
+
+    this.feedbackMap.set(keyId, { state: "running" });
+    this.render();
+  }
+
+  private handleTaskEnd(task: vscode.Task, exitCode: number | undefined): void {
+    const taskKey = createTaskKey(task);
+    const keyId = taskKeyToId(taskKey);
+
+    // Clear any existing timer
+    const existing = this.feedbackMap.get(keyId);
+    if (existing?.timer) {
+      clearTimeout(existing.timer);
+    }
+
+    // Set success or error state
+    const state = exitCode === 0 ? "success" : "error";
+
+    // Set up timer to clear feedback after display period
+    const timer = setTimeout(() => {
+      this.feedbackMap.delete(keyId);
+      this.render();
+    }, FEEDBACK_DISPLAY_MS);
+
+    this.feedbackMap.set(keyId, { state, timer });
+    this.render();
   }
 
   async refresh(): Promise<void> {
@@ -77,6 +136,18 @@ export class TaskasaurusController {
       clearTimeout(this.refreshTimer);
       this.refreshTimer = undefined;
     }
+    // Clear all feedback timers
+    for (const feedback of this.feedbackMap.values()) {
+      if (feedback.timer) {
+        clearTimeout(feedback.timer);
+      }
+    }
+    this.feedbackMap.clear();
+    // Dispose event listeners
+    for (const disposable of this.disposables) {
+      disposable.dispose();
+    }
+    this.disposables.length = 0;
     this.renderer.dispose();
   }
 
@@ -132,7 +203,7 @@ export class TaskasaurusController {
   }
 
   private render(): void {
-    this.renderer.render(this.roots, this.uiState);
+    this.renderer.render(this.roots, this.uiState, this.feedbackMap);
   }
 
   private startCollapseTimer(): void {

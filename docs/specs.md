@@ -162,23 +162,38 @@ This preserves determinism without introducing alternate click behaviors.
 - On leaf click: call `vscode.tasks.executeTask(task)` ([VS Code API][5])
 - Immediately collapse all groups (per your requirement).
 
-### Optional run feedback (recommended, still Status Bar only)
+### Run feedback indicators
 
-If you want basic feedback without extra UI:
+Provide visual feedback in the status bar while tasks are running and after completion.
 
-- For the clicked task’s status bar item (in collapsed view), temporarily prefix with:
-  - Running: `$(loading~spin)` (supported spinning icons) ([Visual Studio Code][2])
-  - Success: `$(check)` for 2s
-  - Failure (non-zero exit code): `$(error)` for 2s
+**Feedback states:**
 
-- Use `vscode.tasks.onDidEndTaskProcess` to capture exit code. ([VS Code API][5])
+- **Running:** Prefix the task's status bar item with `$(loading~spin)` (animated spinner). ([Visual Studio Code][2])
+- **Success:** On exit code 0, show `$(check)` for 2 seconds, then revert to normal.
+- **Failure:** On non-zero exit code, show `$(error)` for 2 seconds, then revert to normal.
 
-If you want v1 to be simpler, omit this.
+**Tracking behavior:**
+
+- Use `vscode.tasks.onDidStartTaskProcess` to detect when a task begins execution.
+- Use `vscode.tasks.onDidEndTaskProcess` to capture exit code and trigger success/failure feedback. ([VS Code API][5])
+- Track the task by matching `TaskExecution` to the stored `TaskKey`.
+
+**Display rules:**
+
+- Feedback is shown on the task's status bar item in the **collapsed view**.
+- If the task is currently a child (group expanded), show feedback on the child item; on collapse, transfer to the corresponding root item.
+- If the user launches another task while one is running, show feedback for **all running tasks** simultaneously (each task tracks its own state).
+- After the 2-second success/error display, revert to the normal label (no icon prefix or standard task icon if configured).
+
+**Edge cases:**
+
+- If a task is hidden (`"hide": true`), no feedback is shown (task doesn't appear in status bar).
+- If the same task is launched multiple times concurrently, track each execution independently.
 
 ### Concurrency
 
 - If user launches another task while one is running, allow it (VS Code tasks support multiple executions).
-- Feedback (if implemented) should track only the **most recently launched** task to avoid status bar clutter.
+- Each running task displays its own feedback indicator independently.
 
 ---
 
@@ -414,6 +429,8 @@ Behavior:
 - [ ] Works with tasks from `.vscode/tasks.json` and auto-detected tasks. ([Visual Studio Code][3])
 - [ ] Multi-root: duplicate labels are disambiguated.
 - [ ] Tasks with `"hide": true` do not appear in the status bar and do not affect group formation.
+- [ ] Running tasks show `$(loading~spin)` indicator.
+- [ ] Completed tasks show `$(check)` (success) or `$(error)` (failure) for 2 seconds.
 
 ### Non-functional
 
