@@ -1,5 +1,7 @@
 # Taskasaurus
 
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/tangent.taskasaurus?label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=tangent.taskasaurus)
+
 A VS Code extension that displays your tasks in the status bar for one-click launching. Perfect for repositories with many build, test, lint, and run tasks.
 
 ![Taskasaurus Demo](https://github.com/tangentlin/taskasaurus/raw/HEAD/docs/demo.gif)
@@ -15,6 +17,10 @@ A VS Code extension that displays your tasks in the status bar for one-click lau
 - **Hide tasks** - Keep utility tasks out of the status bar while still accessible via Command Palette
 
 ## Installation
+
+**[Install from VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=tangent.taskasaurus)**
+
+Or install manually:
 
 1. Open VS Code
 2. Go to the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`)
@@ -160,5 +166,6 @@ MIT
 
 ## Links
 
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=tangent.taskasaurus)
 - [Report Issues](https://github.com/tangentlin/taskasaurus/issues)
 - [Source Code](https://github.com/tangentlin/taskasaurus)
