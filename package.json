@@ -25,7 +25,7 @@
   "publisher": "tangent",
   "main": "./dist/extension.js",
   "scripts": {
-    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20 --sourcemap --main-fields=module,main",
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20 --main-fields=module,main",
     "watch": "pnpm run build --sourcemap --watch",
     "check:lint": "oxlint src",
     "check:style": "oxfmt .",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "@types/vscode": "^1.107.0",
+    "@types/vscode": "^1.85.0",
     "@vitest/coverage-v8": "^4.0.16",
     "@vscode/vsce": "^3.7.1",
     "esbuild": "^0.19.12",

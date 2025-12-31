@@ -14,3 +14,4 @@ vitest.config.ts
 pnpm-lock.yaml
 .sl/**
 .claude/**
+test-project/**

@@ -141,3 +141,7 @@ vite.config.ts.timestamp-*
 
 # Claude
 .claude/settings.local.json
+
+
+# Compiled VSIX file
+/taskasaurus-*.vsix
