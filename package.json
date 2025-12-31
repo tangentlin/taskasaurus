@@ -1,0 +1,55 @@
+{
+  "name": "taskasaurus",
+  "displayName": "Taskasaurus",
+  "description": "A status-bar task launcher strip for repositories with many tasks",
+  "version": "0.1.0",
+  "publisher": "tangent",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.vscode/tasks.json"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "taskasaurus.clickNode",
+        "title": "Taskasaurus: Click Node"
+      },
+      {
+        "command": "taskasaurus.refresh",
+        "title": "Taskasaurus: Refresh Tasks"
+      },
+      {
+        "command": "taskasaurus.collapse",
+        "title": "Taskasaurus: Collapse All Groups"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20",
+    "watch": "pnpm run build --sourcemap --watch",
+    "lint": "oxlint src",
+    "test": "vitest run",
+    "package": "pnpm run build && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.19.12",
+    "oxlint": "^1.36.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.2.1"
+  }
+}
