@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "noop",
+      "label": "noop",
+      "icon": {
+        "id": "book"
+      },
+      "hide": true
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "label": "npm: build",
+      "icon": {
+        "id": "build"
+      },
+    },
+    {
+      "type": "npm",
+      "script": "watch",
+      "group": "build",
+      "label": "npm: watch",
+      "isBackground": true,
+      "icon": {
+        "id": "watch"
+      },
+      "hide": true
+    },
+    {
+      "type": "npm",
+      "script": "check",
+      "label": "npm: check",
+      "isBackground": true,
+      "icon": {
+        "id": "check"
+      },
+    },
+  ]
+}
