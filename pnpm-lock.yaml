@@ -16,7 +16,7 @@ importers:
         specifier: ^20.11.0
         version: 20.19.27
       '@types/vscode':
-        specifier: ^1.107.0
+        specifier: ^1.85.0
         version: 1.107.0
       '@vitest/coverage-v8':
         specifier: ^4.0.16
