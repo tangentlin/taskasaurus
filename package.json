@@ -32,7 +32,7 @@
     "format:check": "oxfmt --check .",
     "test": "vitest run",
     "package": "pnpm run build && vsce package --no-dependencies",
-    "release": "changelogithub"
+    "release": "changelogen --release"
   },
   "dependencies": {
     "jsonc-parser": "^3.2.1"
@@ -44,7 +44,7 @@
     "@types/vscode": "^1.85.0",
     "@vitest/coverage-v8": "^4.0.16",
     "@vscode/vsce": "^3.7.1",
-    "changelogithub": "^14.0.0",
+    "changelogen": "^0.6.2",
     "esbuild": "^0.19.12",
     "oxfmt": "^0.21.0",
     "oxlint": "^1.36.0",
