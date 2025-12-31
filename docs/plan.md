@@ -126,7 +126,23 @@ This is the implementation plan for the Taskasaurus VS Code extension described 
 - Tasks with `"hide": true` in `tasks.json` do not appear in the status bar.
 - Group formation correctly accounts for hidden tasks (groups dissolve if < 2 visible children).
 
-### M7 — QA + packaging
+### M7 — Run feedback indicators
+
+- Track running tasks via `vscode.tasks.onDidStartTaskProcess`.
+- Show `$(loading~spin)` prefix on the task's status bar item while running.
+- On task completion (`onDidEndTaskProcess`):
+  - Exit code 0: show `$(check)` for 2 seconds.
+  - Non-zero exit code: show `$(error)` for 2 seconds.
+- Store feedback state per task (keyed by `TaskKey`) to support concurrent executions.
+- After feedback timeout, revert to normal label.
+
+**Done when**
+
+- Running tasks display spinner animation.
+- Completed tasks show success/error icon briefly before reverting.
+- Multiple concurrent tasks each show their own feedback state.
+
+### M8 — QA + packaging
 
 - Manual QA checklist (based on `docs/specs.md` acceptance criteria):
   - Collapsed/expanded behavior
@@ -136,6 +152,7 @@ This is the implementation plan for the Taskasaurus VS Code extension described 
   - Multi-root disambiguation
   - Works with both `tasks.json` tasks and provider tasks
   - Hidden tasks (`"hide": true`) do not appear and do not affect grouping
+  - Run feedback indicators (spinner, check, error)
 - Package the extension (e.g., with `vsce`) and install locally for verification.
 
 **Done when**
@@ -144,5 +161,4 @@ This is the implementation plan for the Taskasaurus VS Code extension described 
 
 ## Open questions / follow-ups
 
-- Whether to include “run feedback” (spinning / check / error) in v1, or defer to v1.1.
 - How to robustly extract runtime task icons across VS Code versions/providers (may require experimentation).

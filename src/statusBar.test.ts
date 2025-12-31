@@ -6,6 +6,7 @@ import {
   composeRootLeafLabel,
   composeChildLeafLabel,
   COMMAND_ID,
+  FeedbackMap,
 } from "./statusBarModel";
 import type { RootNode, UIState } from "./types";
 
@@ -178,5 +179,83 @@ describe("buildVisibleItems", () => {
 
   it("exports correct COMMAND_ID", () => {
     expect(COMMAND_ID).toBe("taskasaurus.clickNode");
+  });
+});
+
+describe("feedback icons in labels", () => {
+  it("shows running spinner on root leaf", () => {
+    const label = composeRootLeafLabel({ label: "Build" }, { state: "running" });
+    expect(label).toBe("$(loading~spin) Build");
+  });
+
+  it("shows check on success for root leaf", () => {
+    const label = composeRootLeafLabel({ label: "Build" }, { state: "success" });
+    expect(label).toBe("$(check) Build");
+  });
+
+  it("shows error on failure for root leaf", () => {
+    const label = composeRootLeafLabel({ label: "Build" }, { state: "error" });
+    expect(label).toBe("$(error) Build");
+  });
+
+  it("feedback icon replaces task icon on root leaf", () => {
+    const label = composeRootLeafLabel({ label: "Build", iconId: "tools" }, { state: "running" });
+    expect(label).toBe("$(loading~spin) Build");
+  });
+
+  it("shows running spinner on child leaf", () => {
+    const label = composeChildLeafLabel(
+      {
+        id: "test",
+        kind: "childLeaf",
+        label: "Test: unit",
+        taskKey: { label: "Test: unit", source: "Workspace" },
+      },
+      { state: "running" },
+    );
+    expect(label).toBe("$(arrow-small-right) $(loading~spin) Test: unit");
+  });
+
+  it("shows running spinner on parent with runnable task", () => {
+    const label = composeParentLabel({ label: "Test" }, false, { state: "running" });
+    expect(label).toBe("$(loading~spin) Test $(chevron-right)");
+  });
+});
+
+describe("buildVisibleItems with feedback", () => {
+  const createRootLeaf = (label: string): RootNode => ({
+    id: `rootLeaf::${label}`,
+    kind: "rootLeaf",
+    label,
+    taskKey: { label, source: "Workspace" },
+  });
+
+  it("applies feedback to root leaf", () => {
+    const roots = [createRootLeaf("Build")];
+    const feedbackMap: FeedbackMap = new Map([["Build::Workspace", { state: "running" }]]);
+    const items = buildVisibleItems(roots, {}, feedbackMap);
+
+    expect(items[0].label).toBe("$(loading~spin) Build");
+  });
+
+  it("applies feedback to multiple tasks independently", () => {
+    const roots = [createRootLeaf("Build"), createRootLeaf("Test")];
+    const feedbackMap: FeedbackMap = new Map([
+      ["Build::Workspace", { state: "success" }],
+      ["Test::Workspace", { state: "error" }],
+    ]);
+    const items = buildVisibleItems(roots, {}, feedbackMap);
+
+    expect(items[0].label).toBe("$(check) Build");
+    expect(items[1].label).toBe("$(error) Test");
+  });
+
+  it("shows no feedback icon when task not in feedback map", () => {
+    const roots = [createRootLeaf("Build"), createRootLeaf("Test")];
+    const feedbackMap: FeedbackMap = new Map([["Build::Workspace", { state: "running" }]]);
+    const items = buildVisibleItems(roots, {}, feedbackMap);
+
+    expect(items[0].label).toBe("$(loading~spin) Build");
+    expect(items[1].label).toBe("Test");
   });
 });
