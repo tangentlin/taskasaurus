@@ -14,13 +14,13 @@
       "icon": { "id": "run" }
     },
     {
-      "label": "Test: unit",
+      "label": "Test/unit",
       "type": "shell",
       "command": "npm run test:unit",
       "icon": { "id": "beaker" }
     },
     {
-      "label": "Test: e2e",
+      "label": "Test/e2e",
       "type": "shell",
       "command": "npm run test:e2e",
       "icon": { "id": "compass" }

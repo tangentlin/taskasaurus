@@ -28,7 +28,7 @@ describe("buildHierarchy", () => {
     expect(result).toEqual([]);
   });
 
-  it("creates root leaves for tasks without colons", () => {
+  it("creates root leaves for tasks without slashes", () => {
     const tasks = [mockTask("Build"), mockTask("Run")];
     const result = buildHierarchy(tasks, emptyIconMap);
 
@@ -40,12 +40,7 @@ describe("buildHierarchy", () => {
   });
 
   it("creates a group when 2+ tasks share a group name", () => {
-    const tasks = [
-      mockTask("Build"),
-      mockTask("Test: unit"),
-      mockTask("Test: e2e"),
-      mockTask("Run"),
-    ];
+    const tasks = [mockTask("Build"), mockTask("Test/unit"), mockTask("Test/e2e"), mockTask("Run")];
     const result = buildHierarchy(tasks, emptyIconMap);
 
     expect(result).toHaveLength(3); // Build, Test (parent), Run
@@ -56,13 +51,13 @@ describe("buildHierarchy", () => {
 
     if (testGroup?.kind === "parent") {
       expect(testGroup.children).toHaveLength(2);
-      expect(testGroup.children[0].label).toBe("Test: e2e");
-      expect(testGroup.children[1].label).toBe("Test: unit");
+      expect(testGroup.children[0].label).toBe("Test/e2e");
+      expect(testGroup.children[1].label).toBe("Test/unit");
     }
   });
 
-  it("does NOT create a group when only 1 task has a colon", () => {
-    const tasks = [mockTask("Build"), mockTask("Test: unit"), mockTask("Run")];
+  it("does NOT create a group when only 1 task has a slash", () => {
+    const tasks = [mockTask("Build"), mockTask("Test/unit"), mockTask("Run")];
     const result = buildHierarchy(tasks, emptyIconMap);
 
     expect(result).toHaveLength(3);
@@ -72,8 +67,8 @@ describe("buildHierarchy", () => {
   it("handles edge case: task label equals group name (runnable parent)", () => {
     const tasks = [
       mockTask("Test"), // exactly "Test"
-      mockTask("Test: unit"),
-      mockTask("Test: e2e"),
+      mockTask("Test/unit"),
+      mockTask("Test/e2e"),
     ];
     const result = buildHierarchy(tasks, emptyIconMap);
 
@@ -88,8 +83,8 @@ describe("buildHierarchy", () => {
       // The runnable task should appear at the top of children
       expect(testGroup.children).toHaveLength(3);
       expect(testGroup.children[0].label).toBe("Test");
-      expect(testGroup.children[1].label).toBe("Test: e2e");
-      expect(testGroup.children[2].label).toBe("Test: unit");
+      expect(testGroup.children[1].label).toBe("Test/e2e");
+      expect(testGroup.children[2].label).toBe("Test/unit");
     }
   });
 
@@ -101,15 +96,15 @@ describe("buildHierarchy", () => {
   });
 
   it("sorts group children alphabetically by full label", () => {
-    const tasks = [mockTask("Test: zebra"), mockTask("Test: alpha"), mockTask("Test: Beta")];
+    const tasks = [mockTask("Test/zebra"), mockTask("Test/alpha"), mockTask("Test/Beta")];
     const result = buildHierarchy(tasks, emptyIconMap);
 
     expect(result).toHaveLength(1);
     if (result[0].kind === "parent") {
       expect(result[0].children.map((c) => c.label)).toEqual([
-        "Test: alpha",
-        "Test: Beta",
-        "Test: zebra",
+        "Test/alpha",
+        "Test/Beta",
+        "Test/zebra",
       ]);
     }
   });
@@ -125,10 +120,10 @@ describe("buildHierarchy", () => {
   it("handles multiple groups correctly", () => {
     const tasks = [
       mockTask("Build"),
-      mockTask("Test: unit"),
-      mockTask("Test: e2e"),
-      mockTask("Check: lint"),
-      mockTask("Check: style"),
+      mockTask("Test/unit"),
+      mockTask("Test/e2e"),
+      mockTask("Check/lint"),
+      mockTask("Check/style"),
       mockTask("Run"),
     ];
     const result = buildHierarchy(tasks, emptyIconMap);
