@@ -2,7 +2,7 @@
 
 A VS Code extension that displays your tasks in the status bar for one-click launching. Perfect for repositories with many build, test, lint, and run tasks.
 
-![Taskasaurus Demo](docs/demo.gif)
+![Taskasaurus Demo](https://github.com/tangentlin/taskasaurus/raw/HEAD/docs/demo.gif)
 
 ## Features
 
@@ -27,12 +27,12 @@ A VS Code extension that displays your tasks in the status bar for one-click lau
 
 Once installed, Taskasaurus automatically displays your workspace tasks in the left side of the status bar:
 
-![Collapsed View](docs/collapsed.png)
+![Collapsed View](https://github.com/tangentlin/taskasaurus/raw/HEAD/docs/collapsed.png)
 
 - **Click a task** to run it
 - **Click a group** (indicated by a chevron) to expand it and see its children
 
-![Expanded View](docs/expanded.png)
+![Expanded View](https://github.com/tangentlin/taskasaurus/raw/HEAD/docs/expanded.png)
 
 ### Task Grouping
 
@@ -52,8 +52,9 @@ Taskasaurus automatically groups tasks that share a common prefix separated by a
 
 This creates:
 
-- `Build` - standalone task
-- `Test` - expandable group containing `Test: unit`, `Test: e2e`, and `Test: integration`
+- `Package` - standalone task
+- `Run` - standalone task
+- `Test` - expandable group containing `Test: unit` and `Test: e2e`
 
 > **Note:** Groups are only created when there are 2 or more tasks with the same prefix.
 
@@ -92,18 +93,6 @@ Add icons to your tasks using the `icon` property with any [VS Code codicon](htt
   ]
 }
 ```
-
-**Recommended icons for common tasks:**
-
-| Task Type  | Icon ID                    |
-|------------|----------------------------|
-| Build      | `package`, `tools`         |
-| Test       | `beaker`, `test-view-icon` |
-| Lint/Check | `checklist`, `check`       |
-| Run/Start  | `play`, `run`              |
-| Watch      | `eye`, `refresh`           |
-| Deploy     | `rocket`, `cloud-upload`   |
-| Clean      | `trash`                    |
 
 ### Hiding Tasks
 
@@ -148,10 +137,10 @@ When working with multiple workspace folders that have tasks with the same name,
 
 Taskasaurus provides these commands (accessible via Command Palette):
 
-| Command                          | Description                    |
-|----------------------------------|--------------------------------|
-| `Taskasaurus: Refresh Tasks`     | Manually refresh the task list |
-| `Taskasaurus: Collapse All Groups` | Collapse any expanded group  |
+| Command                            | Description                    |
+| ---------------------------------- | ------------------------------ |
+| `Taskasaurus: Refresh Tasks`       | Manually refresh the task list |
+| `Taskasaurus: Collapse All Groups` | Collapse any expanded group    |
 
 ## Requirements
 
