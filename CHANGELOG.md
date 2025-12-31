@@ -2,7 +2,7 @@
 
 All notable changes to Taskasaurus will be documented in this file.
 
-This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogithub](https://github.com/antfu/changelogithub).
+This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
 ## [1.0.1]
 
