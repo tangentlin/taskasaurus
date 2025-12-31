@@ -2,14 +2,14 @@
 
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/tangent.taskasaurus?label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=tangent.taskasaurus)
 
-A VS Code extension that displays your tasks in the status bar for one-click launching. Perfect for repositories with many build, test, lint, and run tasks.
+Taskasaurus turns VS Code Tasks (think: saved CLI commands) into a one-click launcher strip in the status bar—so you can keep frequently used automations in your editor instead of context switching to the terminal. It also groups related tasks (like `Test/unit` / `Test/e2e`) to keep large task lists organized.
 
 ![Taskasaurus Demo](https://github.com/tangentlin/taskasaurus/raw/HEAD/docs/demo.gif)
 
 ## Features
 
 - **Status bar task launcher** - Tasks appear directly in the status bar for quick access
-- **Automatic grouping** - Tasks with colon-separated names (e.g., `Test: unit`, `Test: e2e`) are grouped together
+- **Automatic grouping** - Tasks with slash-separated names (e.g., `Test/unit`, `Test/e2e`) are grouped together
 - **Expandable groups** - Click a group to expand it, click again to collapse
 - **One-click execution** - Click any task to run it immediately
 - **Icon support** - Display icons next to your tasks using VS Code's built-in codicons
@@ -42,7 +42,7 @@ Once installed, Taskasaurus automatically displays your workspace tasks in the l
 
 ### Task Grouping
 
-Taskasaurus automatically groups tasks that share a common prefix separated by a colon. For example:
+Taskasaurus automatically groups tasks that share a common prefix separated by a slash. For example:
 
 ```json
 {
@@ -50,8 +50,8 @@ Taskasaurus automatically groups tasks that share a common prefix separated by a
   "tasks": [
     { "label": "Package", "type": "shell", "command": "npm run build" },
     { "label": "Run", "type": "shell", "command": "npm start" },
-    { "label": "Test: unit", "type": "shell", "command": "npm run test:unit" },
-    { "label": "Test: e2e", "type": "shell", "command": "npm run test:e2e" },
+    { "label": "Test/unit", "type": "shell", "command": "npm run test:unit" },
+    { "label": "Test/e2e", "type": "shell", "command": "npm run test:e2e" },
   ]
 }
 ```
@@ -60,7 +60,7 @@ This creates:
 
 - `Package` - standalone task
 - `Run` - standalone task
-- `Test` - expandable group containing `Test: unit` and `Test: e2e`
+- `Test` - expandable group containing `Test/unit` and `Test/e2e`
 
 > **Note:** Groups are only created when there are 2 or more tasks with the same prefix.
 
@@ -85,13 +85,13 @@ Add icons to your tasks using the `icon` property with any [VS Code codicon](htt
       "icon": { "id": "run" }
     },
     {
-      "label": "Test: unit",
+      "label": "Test/unit",
       "type": "shell",
       "command": "npm run test:unit",
       "icon": { "id": "beaker" }
     },
     {
-      "label": "Test: e2e",
+      "label": "Test/e2e",
       "type": "shell",
       "command": "npm run test:e2e",
       "icon": { "id": "compass" }
@@ -156,7 +156,7 @@ Taskasaurus provides these commands (accessible via Command Palette):
 ## Tips
 
 1. **Keep task labels short** - Status bar space is limited
-2. **Use consistent naming** - `Category: action` format works best for grouping
+2. **Use consistent naming** - `Category/action` format works best for grouping
 3. **Add icons** - Visual cues make tasks easier to identify at a glance
 4. **Hide background tasks** - Use `hide: true` for watchers and internal scripts
 
