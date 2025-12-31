@@ -42,3 +42,10 @@ export type UIState = {
   lastInteractionAt?: number;
   collapseTimer?: ReturnType<typeof setTimeout>;
 };
+
+export type TaskFeedbackState = "running" | "success" | "error";
+
+export type TaskFeedback = {
+  state: TaskFeedbackState;
+  timer?: ReturnType<typeof setTimeout>;
+};
