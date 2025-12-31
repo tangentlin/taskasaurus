@@ -20,11 +20,11 @@ type TaskInfo = {
 };
 
 function parseGroupName(label: string): string | undefined {
-  const colonIndex = label.indexOf(":");
-  if (colonIndex === -1) {
+  const slashIndex = label.indexOf("/");
+  if (slashIndex === -1) {
     return undefined;
   }
-  return label.substring(0, colonIndex).trim();
+  return label.substring(0, slashIndex).trim();
 }
 
 function getTaskIconId(task: vscode.Task, iconMap: IconMap): string | undefined {
@@ -60,7 +60,7 @@ export function buildHierarchy(tasks: vscode.Task[], iconMap: IconMap): RootNode
   }));
 
   // Step 2: Count how many tasks belong to each potential group
-  // Tasks with "Group: something" contribute to group "Group"
+  // Tasks with "Group/something" contribute to group "Group"
   const groupCounts = new Map<string, number>();
   for (const info of taskInfos) {
     if (info.groupName !== undefined) {
@@ -68,7 +68,7 @@ export function buildHierarchy(tasks: vscode.Task[], iconMap: IconMap): RootNode
     }
   }
 
-  // Step 3: Determine which groups are valid (2+ children with colons)
+  // Step 3: Determine which groups are valid (2+ children with slashes)
   const validGroups = new Set<string>();
   for (const [groupName, count] of groupCounts) {
     if (count >= 2) {
@@ -98,7 +98,7 @@ export function buildHierarchy(tasks: vscode.Task[], iconMap: IconMap): RootNode
 
   for (const info of taskInfos) {
     // Check if this task belongs to a valid group:
-    // 1. Has a groupName (colon prefix) that matches a valid group, OR
+    // 1. Has a groupName (slash prefix) that matches a valid group, OR
     // 2. Task label exactly matches a valid group name (exactMatchTasks)
     const belongsToGroup =
       (info.groupName !== undefined && validGroups.has(info.groupName)) ||
@@ -115,7 +115,7 @@ export function buildHierarchy(tasks: vscode.Task[], iconMap: IconMap): RootNode
       }
 
       // Check if task label equals group name exactly (runnable parent)
-      // This happens when label is exactly "Test" and we have "Test: unit", "Test: e2e"
+      // This happens when label is exactly "Test" and we have "Test/unit", "Test/e2e"
       if (info.label === groupName) {
         group.runnableTask = info;
       }
@@ -130,7 +130,7 @@ export function buildHierarchy(tasks: vscode.Task[], iconMap: IconMap): RootNode
       };
       group.children.push(childNode);
     } else {
-      // Root leaf: either no colon, or only one task with this group name
+      // Root leaf: either no slash, or only one task with this group name
       const rootLeaf: RootLeafNode = {
         id: generateNodeId("rootLeaf", info.taskKey),
         kind: "rootLeaf",

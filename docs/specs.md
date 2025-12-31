@@ -35,10 +35,10 @@
 Given tasks:
 
 - `Build`
-- `Test: unit`
-- `Test: e2e`
-- `Check: lint`
-- `Check: style`
+- `Test/unit`
+- `Test/e2e`
+- `Check/lint`
+- `Check/style`
 - `Run`
 
 Collapsed:
@@ -52,8 +52,8 @@ Expanded(Test):
 
 - `Build`
 - `Test [disclosure]`
-- `childIcon  taskIcon?  Test: unit`
-- `childIcon  taskIcon?  Test: e2e`
+- `childIcon  taskIcon?  Test/unit`
+- `childIcon  taskIcon?  Test/e2e`
 - `Check [disclosure]`
 - `Run`
 
@@ -83,7 +83,7 @@ Status bar text supports codicons like `$(chevron-right)` and multiple icons. ([
 Tooltips:
 
 - Parent: “Expand group ‘Test’”
-- Child: “Run task ‘Test: unit’”
+- Child: "Run task 'Test/unit'"
 - Root leaf: “Run task ‘Build’”
 - Include `task.source` and workspace folder name in tooltip for multi-root disambiguation.
 
@@ -118,7 +118,7 @@ Use `vscode.tasks.fetchTasks()` to obtain all tasks available (including from pr
 Tasks may define a `"hide": true` property in `.vscode/tasks.json`. When a task is marked as hidden:
 
 - It **must not** appear in the status bar (neither as a root leaf, parent, nor child).
-- It **must not** contribute to group formation. For example, if `Test: unit` and `Test: e2e` both exist but `Test: e2e` has `hide: true`, no "Test" group is created since only one visible child remains.
+- It **must not** contribute to group formation. For example, if `Test/unit` and `Test/e2e` both exist but `Test/e2e` has `hide: true`, no "Test" group is created since only one visible child remains.
 - Hidden tasks are filtered out **before** the grouping algorithm runs.
 
 **Implementation:**
@@ -133,10 +133,10 @@ Tasks may define a `"hide": true` property in `.vscode/tasks.json`. When a task 
 
 Taskasaurus will create _virtual_ groups based on a delimiter in the task label:
 
-- Delimiter: first `:` (colon) in the label.
-- `GroupName = label.split(':', 1)[0].trim()`
-- If no `:`, task is a **root leaf**.
-- If `:` exists, task is a **candidate child** belonging to `GroupName`.
+- Delimiter: first `/` (slash) in the label.
+- `GroupName = label.split('/', 1)[0].trim()`
+- If no `/`, task is a **root leaf**.
+- If `/` exists, task is a **candidate child** belonging to `GroupName`.
 
 **When to create a group**
 
@@ -318,7 +318,7 @@ type ParentNode = {
 type ChildLeafNode = {
   id: NodeId;
   kind: "childLeaf";
-  label: string;          // full task label ("Test: unit")
+  label: string;          // full task label ("Test/unit")
   taskKey: TaskKey;
   iconId?: string;
 };
@@ -431,7 +431,7 @@ Behavior:
 
 ---
 
-If you want, I can also draft a **minimal `tasks.json` conventions guide** to encourage clean grouping (e.g., `Group: action` naming patterns), plus a set of recommended codicons for common task types (build/test/lint/run) using the official icon IDs. ([Visual Studio Code][2])
+If you want, I can also draft a **minimal `tasks.json` conventions guide** to encourage clean grouping (e.g., `Group/action` naming patterns), plus a set of recommended codicons for common task types (build/test/lint/run) using the official icon IDs. ([Visual Studio Code][2])
 
 [1]: https://vshaxe.github.io/vscode-extern/vscode/StatusBarItem.html?utm_source=chatgpt.com "vscode.StatusBarItem - Haxe externs for Visual Studio Code - API ..."
 [2]: https://code.visualstudio.com/api/references/icons-in-labels "Product Icon Reference | Visual Studio Code Extension
