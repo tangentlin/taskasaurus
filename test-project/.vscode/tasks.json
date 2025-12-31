@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Package",
+      "type": "shell",
+      "command": "npm run build",
+      "icon": { "id": "build" }
+    },
+    {
+      "label": "Run",
+      "type": "shell",
+      "command": "npm start",
+      "icon": { "id": "run" }
+    },
+    {
+      "label": "Test: unit",
+      "type": "shell",
+      "command": "npm run test:unit",
+      "icon": { "id": "beaker" }
+    },
+    {
+      "label": "Test: e2e",
+      "type": "shell",
+      "command": "npm run test:e2e",
+      "icon": { "id": "compass" }
+    }
+  ]
+}
