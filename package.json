@@ -1,7 +1,7 @@
 {
   "name": "taskasaurus",
   "displayName": "Taskasaurus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A status-bar task launcher strip for repositories with many tasks",
   "categories": [
     "Other"
@@ -31,16 +31,20 @@
     "check:style": "oxfmt .",
     "format:check": "oxfmt --check .",
     "test": "vitest run",
-    "package": "pnpm run build && vsce package --no-dependencies"
+    "package": "pnpm run build && vsce package --no-dependencies",
+    "release": "changelogithub"
   },
   "dependencies": {
     "jsonc-parser": "^3.2.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
     "@vitest/coverage-v8": "^4.0.16",
     "@vscode/vsce": "^3.7.1",
+    "changelogithub": "^14.0.0",
     "esbuild": "^0.19.12",
     "oxfmt": "^0.21.0",
     "oxlint": "^1.36.0",
