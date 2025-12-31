@@ -3,16 +3,16 @@
   "displayName": "Taskasaurus",
   "version": "1.0.0",
   "description": "A status-bar task launcher strip for repositories with many tasks",
-  "keywords": [
-    "menu",
-    "tasks",
-    "task runner",
-    "status bar",
-    "launcher",
-    "productivity"
-  ],
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "launcher",
+    "menu",
+    "productivity",
+    "status bar",
+    "task runner",
+    "tasks"
   ],
   "bugs": {
     "url": "https://github.com/tangentlin/taskasaurus/issues"
