@@ -4,6 +4,7 @@ import { buildHierarchy, disambiguateLabels } from "./hierarchy";
 import { createTaskKey, resolveTask, taskKeyToId } from "./taskKey";
 import { StatusBarRenderer } from "./statusBar";
 import { loadTasksJsonData } from "./iconLoader";
+import { logInfo, logTaskSource, logFilteringSummary } from "./logger";
 
 const AUTO_COLLAPSE_TIMEOUT_MS = 10_000;
 const REFRESH_DEBOUNCE_MS = 250;
@@ -79,13 +80,35 @@ export class TaskasaurusController {
   }
 
   async refresh(): Promise<void> {
+    logInfo("Refreshing task list...");
+
     const [allTasks, tasksJsonData] = await Promise.all([
       vscode.tasks.fetchTasks(),
       loadTasksJsonData(),
     ]);
 
-    // Filter out hidden tasks before building hierarchy
-    const visibleTasks = allTasks.filter((task) => !tasksJsonData.hiddenLabels.has(task.name));
+    // Filter tasks: only include tasks defined in tasks.json, excluding hidden ones
+    const visibleTasks: vscode.Task[] = [];
+    let filteredCount = 0;
+
+    for (const task of allTasks) {
+      const isDefinedInTasksJson = tasksJsonData.definedLabels.has(task.name);
+      const isHidden = tasksJsonData.hiddenLabels.has(task.name);
+      const folderName =
+        task.scope && typeof task.scope === "object" && "name" in task.scope
+          ? (task.scope as vscode.WorkspaceFolder).name
+          : undefined;
+
+      if (isDefinedInTasksJson && !isHidden) {
+        visibleTasks.push(task);
+        logTaskSource(task.name, task.source, folderName, true);
+      } else {
+        filteredCount++;
+        logTaskSource(task.name, task.source, folderName, false);
+      }
+    }
+
+    logFilteringSummary(allTasks.length, visibleTasks.length, filteredCount);
 
     this.tasks = visibleTasks;
     this.roots = buildHierarchy(this.tasks, tasksJsonData.iconMap);
