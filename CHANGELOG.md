@@ -4,9 +4,19 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
-## v1.1.1...v1.1.1
+## [1.1.1](https://github.com/tangentlin/taskasaurus/compare/v1.1.0...v1.1.1)
 
-[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.1.1...v1.1.1)
+### Bug Fixes
+
+- Filter status bar to only show tasks.json tasks (#12)
+
+### Documentation
+
+- Add release workflow documentation (#9)
+
+### CI
+
+- Add Open VSX publishing to release workflow (#13)
 
 ## [1.0.1]
 
