@@ -105,7 +105,17 @@ function composeParentTooltip(
   return tooltip;
 }
 
-function composeLeafTooltip(label: string, source?: string, folder?: string): string {
+function composeLeafTooltip(
+  label: string,
+  source?: string,
+  folder?: string,
+  detail?: string,
+): string {
+  // If detail is provided and non-empty, use it as the tooltip
+  if (detail) {
+    return detail;
+  }
+
   let tooltip = `Run task '${label}'`;
   if (source || folder) {
     const parts: string[] = [];
@@ -147,7 +157,12 @@ export function buildVisibleItems(
           items.push({
             nodeId: child.id,
             label: composeChildLeafLabel(child, childFeedback),
-            tooltip: composeLeafTooltip(child.label, child.taskKey.source, child.taskKey.folder),
+            tooltip: composeLeafTooltip(
+              child.label,
+              child.taskKey.source,
+              child.taskKey.folder,
+              child.taskKey.detail,
+            ),
             priority: computePriority(i, j),
             commandArgs: { nodeId: child.id },
           });
@@ -159,7 +174,12 @@ export function buildVisibleItems(
       items.push({
         nodeId: node.id,
         label: composeRootLeafLabel(node, feedback),
-        tooltip: composeLeafTooltip(node.label, node.taskKey.source, node.taskKey.folder),
+        tooltip: composeLeafTooltip(
+          node.label,
+          node.taskKey.source,
+          node.taskKey.folder,
+          node.taskKey.detail,
+        ),
         priority: computePriority(i),
         commandArgs: { nodeId: node.id },
       });

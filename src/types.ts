@@ -5,6 +5,7 @@ export type TaskKey = {
   source: string;
   folder?: string;
   definitionType?: string;
+  detail?: string;
 };
 
 export type RootLeafNode = {

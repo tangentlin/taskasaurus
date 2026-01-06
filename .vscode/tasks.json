@@ -9,12 +9,21 @@
       "problemMatcher": []
     },
     {
-      "type": "npm",
-      "script": "watch",
-      "group": "build",
-      "label": "npm: watch",
-      "isBackground": true,
-      "problemMatcher": []
+      "label": "Format",
+      "type": "shell",
+      "detail": "Perform code formatting",
+      "command": "pnpm check:style",
+      "icon": { "id": "paintcan" },
+      "group": {
+        "kind": "none"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "/bin/zsh",
+          "args": ["-c"]
+        }
+      }
     }
   ]
 }
