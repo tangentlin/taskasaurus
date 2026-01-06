@@ -31,8 +31,9 @@ Once the release is published, the [release workflow](../.github/workflows/relea
 5. Publishes to VS Code Marketplace
 6. Uploads the `.vsix` to the GitHub release
 7. Generates changelog and updates `CHANGELOG.md` via `changelogen`
-8. Updates the GitHub release notes with the new changelog entry
-9. Commits the version bump and changelog back to `main`
+8. Deduplicates changelog entries (prefers PR references over commit hashes)
+9. Updates the GitHub release notes with the new changelog entry
+10. Commits the version bump and changelog back to `main`
 
 ## Commit Message Convention
 

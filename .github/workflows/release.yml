@@ -67,18 +67,27 @@ jobs:
         id: changelog
         run: |
           CURRENT_TAG="${{ github.event.release.tag_name }}"
+          VERSION="${{ steps.version.outputs.version }}"
+
           # Get the tag before the current one (sorted by version)
           PREV_TAG=$(git tag --sort=-version:refname | grep -A1 "^${CURRENT_TAG}$" | tail -1)
           if [ "$PREV_TAG" = "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
             # First release or no previous tag
             echo "Generating changelog for first release"
-            pnpm exec changelogen --no-commit --no-tag --output CHANGELOG.md
+            pnpm exec changelogen -r "$VERSION" --no-commit --no-tag --output CHANGELOG.md
           else
             echo "Generating changelog from $PREV_TAG to $CURRENT_TAG"
-            pnpm exec changelogen --from "$PREV_TAG" --to "$CURRENT_TAG" --no-commit --no-tag --output CHANGELOG.md
+            # Use --first-parent to avoid duplicate entries from merge commits
+            # The -r flag sets the version for proper changelog title formatting
+            pnpm exec changelogen --from "$PREV_TAG" --to "$CURRENT_TAG" -r "$VERSION" --no-commit --no-tag --output CHANGELOG.md
           fi
+
+          # Deduplicate changelog entries (prefers PR refs over commit hashes)
+          node scripts/dedupe-changelog.mjs CHANGELOG.md
+
           # Extract the latest version section from CHANGELOG.md for release notes
-          awk '/^## \[?[0-9]+\.[0-9]+\.[0-9]+/{if(found) exit; found=1} found' CHANGELOG.md > release-notes.md
+          # Match version headers like "## v1.2.3" or "## 1.2.3" or "## [1.2.3]"
+          awk '/^## (v?[0-9]+\.[0-9]+\.[0-9]+|\[v?[0-9]+\.[0-9]+\.[0-9]+\])/{if(found) exit; found=1} found' CHANGELOG.md > release-notes.md
 
       - name: Update GitHub release notes
         uses: softprops/action-gh-release@v2
