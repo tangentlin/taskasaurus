@@ -16,9 +16,7 @@ Generate a pull request title and description based on the current changes.
 ## Description Format
 
 ```markdown
-## Summary
-
-[2-3 sentences explaining what this PR does, why, and any benefits]
+[2-3 sentences explaining what this PR does, why, and any benefits, you MUST keep each line under 100 characters]
 
 ## Key Changes
 
