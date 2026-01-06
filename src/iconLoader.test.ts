@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  parseTasksJson,
-  buildIconMapFromTasks,
-  buildHiddenSetFromTasks,
-  TaskDefinition,
-} from "./iconParser";
+import { parseTasksJson, buildTasksMetadata, TaskDefinition } from "./iconParser";
 
 describe("parseTasksJson", () => {
   it("parses valid tasks.json", () => {
@@ -72,74 +67,7 @@ describe("parseTasksJson", () => {
     expect(tasks[0].icon).toBeUndefined();
     expect(tasks[1].icon?.id).toBe("beaker");
   });
-});
 
-describe("buildIconMapFromTasks", () => {
-  it("builds map from single folder", () => {
-    const tasks: TaskDefinition[] = [
-      { label: "Build", icon: { id: "tools" } },
-      { label: "Test", icon: { id: "beaker" } },
-    ];
-
-    const iconMap = buildIconMapFromTasks([tasks]);
-
-    expect(iconMap.size).toBe(2);
-    expect(iconMap.get("Build")).toBe("tools");
-    expect(iconMap.get("Test")).toBe("beaker");
-  });
-
-  it("skips tasks without labels", () => {
-    const tasks: TaskDefinition[] = [
-      { icon: { id: "tools" } },
-      { label: "Test", icon: { id: "beaker" } },
-    ];
-
-    const iconMap = buildIconMapFromTasks([tasks]);
-
-    expect(iconMap.size).toBe(1);
-    expect(iconMap.get("Test")).toBe("beaker");
-  });
-
-  it("skips tasks without icon id", () => {
-    const tasks: TaskDefinition[] = [
-      { label: "Build", icon: { color: "red" } },
-      { label: "Test", icon: { id: "beaker" } },
-    ];
-
-    const iconMap = buildIconMapFromTasks([tasks]);
-
-    expect(iconMap.size).toBe(1);
-    expect(iconMap.get("Test")).toBe("beaker");
-  });
-
-  it("first folder wins for duplicate labels", () => {
-    const folder1Tasks: TaskDefinition[] = [{ label: "Build", icon: { id: "tools" } }];
-    const folder2Tasks: TaskDefinition[] = [{ label: "Build", icon: { id: "gear" } }];
-
-    const iconMap = buildIconMapFromTasks([folder1Tasks, folder2Tasks]);
-
-    expect(iconMap.size).toBe(1);
-    expect(iconMap.get("Build")).toBe("tools");
-  });
-
-  it("merges tasks from multiple folders", () => {
-    const folder1Tasks: TaskDefinition[] = [{ label: "Build", icon: { id: "tools" } }];
-    const folder2Tasks: TaskDefinition[] = [{ label: "Test", icon: { id: "beaker" } }];
-
-    const iconMap = buildIconMapFromTasks([folder1Tasks, folder2Tasks]);
-
-    expect(iconMap.size).toBe(2);
-    expect(iconMap.get("Build")).toBe("tools");
-    expect(iconMap.get("Test")).toBe("beaker");
-  });
-
-  it("returns empty map for empty input", () => {
-    const iconMap = buildIconMapFromTasks([]);
-    expect(iconMap.size).toBe(0);
-  });
-});
-
-describe("parseTasksJson with hide property", () => {
   it("parses hide property", () => {
     const json = `{
       "tasks": [
@@ -157,52 +85,202 @@ describe("parseTasksJson with hide property", () => {
   });
 });
 
-describe("buildHiddenSetFromTasks", () => {
-  it("builds set of hidden task labels", () => {
-    const tasks: TaskDefinition[] = [
-      { label: "Build", hide: true },
-      { label: "Test", hide: false },
-      { label: "Run" },
-    ];
+describe("buildTasksMetadata", () => {
+  describe("iconMap", () => {
+    it("builds map from single folder", () => {
+      const tasks: TaskDefinition[] = [
+        { label: "Build", icon: { id: "tools" } },
+        { label: "Test", icon: { id: "beaker" } },
+      ];
 
-    const hiddenSet = buildHiddenSetFromTasks([tasks]);
+      const { iconMap } = buildTasksMetadata([tasks]);
 
-    expect(hiddenSet.size).toBe(1);
-    expect(hiddenSet.has("Build")).toBe(true);
-    expect(hiddenSet.has("Test")).toBe(false);
-    expect(hiddenSet.has("Run")).toBe(false);
+      expect(iconMap.size).toBe(2);
+      expect(iconMap.get("Build")).toBe("tools");
+      expect(iconMap.get("Test")).toBe("beaker");
+    });
+
+    it("skips tasks without labels", () => {
+      const tasks: TaskDefinition[] = [
+        { icon: { id: "tools" } },
+        { label: "Test", icon: { id: "beaker" } },
+      ];
+
+      const { iconMap } = buildTasksMetadata([tasks]);
+
+      expect(iconMap.size).toBe(1);
+      expect(iconMap.get("Test")).toBe("beaker");
+    });
+
+    it("skips tasks without icon id", () => {
+      const tasks: TaskDefinition[] = [
+        { label: "Build", icon: { color: "red" } },
+        { label: "Test", icon: { id: "beaker" } },
+      ];
+
+      const { iconMap } = buildTasksMetadata([tasks]);
+
+      expect(iconMap.size).toBe(1);
+      expect(iconMap.get("Test")).toBe("beaker");
+    });
+
+    it("first folder wins for duplicate labels", () => {
+      const folder1Tasks: TaskDefinition[] = [{ label: "Build", icon: { id: "tools" } }];
+      const folder2Tasks: TaskDefinition[] = [{ label: "Build", icon: { id: "gear" } }];
+
+      const { iconMap } = buildTasksMetadata([folder1Tasks, folder2Tasks]);
+
+      expect(iconMap.size).toBe(1);
+      expect(iconMap.get("Build")).toBe("tools");
+    });
+
+    it("merges tasks from multiple folders", () => {
+      const folder1Tasks: TaskDefinition[] = [{ label: "Build", icon: { id: "tools" } }];
+      const folder2Tasks: TaskDefinition[] = [{ label: "Test", icon: { id: "beaker" } }];
+
+      const { iconMap } = buildTasksMetadata([folder1Tasks, folder2Tasks]);
+
+      expect(iconMap.size).toBe(2);
+      expect(iconMap.get("Build")).toBe("tools");
+      expect(iconMap.get("Test")).toBe("beaker");
+    });
   });
 
-  it("skips tasks without labels", () => {
-    const tasks: TaskDefinition[] = [{ hide: true }, { label: "Test", hide: true }];
+  describe("hiddenLabels", () => {
+    it("builds set of hidden task labels", () => {
+      const tasks: TaskDefinition[] = [
+        { label: "Build", hide: true },
+        { label: "Test", hide: false },
+        { label: "Run" },
+      ];
 
-    const hiddenSet = buildHiddenSetFromTasks([tasks]);
+      const { hiddenLabels } = buildTasksMetadata([tasks]);
 
-    expect(hiddenSet.size).toBe(1);
-    expect(hiddenSet.has("Test")).toBe(true);
+      expect(hiddenLabels.size).toBe(1);
+      expect(hiddenLabels.has("Build")).toBe(true);
+      expect(hiddenLabels.has("Test")).toBe(false);
+      expect(hiddenLabels.has("Run")).toBe(false);
+    });
+
+    it("skips tasks without labels", () => {
+      const tasks: TaskDefinition[] = [{ hide: true }, { label: "Test", hide: true }];
+
+      const { hiddenLabels } = buildTasksMetadata([tasks]);
+
+      expect(hiddenLabels.size).toBe(1);
+      expect(hiddenLabels.has("Test")).toBe(true);
+    });
+
+    it("collects hidden tasks from multiple folders", () => {
+      const folder1Tasks: TaskDefinition[] = [{ label: "Build", hide: true }];
+      const folder2Tasks: TaskDefinition[] = [{ label: "Watch", hide: true }];
+
+      const { hiddenLabels } = buildTasksMetadata([folder1Tasks, folder2Tasks]);
+
+      expect(hiddenLabels.size).toBe(2);
+      expect(hiddenLabels.has("Build")).toBe(true);
+      expect(hiddenLabels.has("Watch")).toBe(true);
+    });
+
+    it("returns empty set when no hidden tasks", () => {
+      const tasks: TaskDefinition[] = [{ label: "Build" }, { label: "Test", hide: false }];
+
+      const { hiddenLabels } = buildTasksMetadata([tasks]);
+
+      expect(hiddenLabels.size).toBe(0);
+    });
   });
 
-  it("collects hidden tasks from multiple folders", () => {
-    const folder1Tasks: TaskDefinition[] = [{ label: "Build", hide: true }];
-    const folder2Tasks: TaskDefinition[] = [{ label: "Watch", hide: true }];
+  describe("definedLabels", () => {
+    it("collects all task labels", () => {
+      const tasks: TaskDefinition[] = [
+        { label: "Build" },
+        { label: "Test" },
+        { label: "Run" },
+      ];
 
-    const hiddenSet = buildHiddenSetFromTasks([folder1Tasks, folder2Tasks]);
+      const { definedLabels } = buildTasksMetadata([tasks]);
 
-    expect(hiddenSet.size).toBe(2);
-    expect(hiddenSet.has("Build")).toBe(true);
-    expect(hiddenSet.has("Watch")).toBe(true);
+      expect(definedLabels.size).toBe(3);
+      expect(definedLabels.has("Build")).toBe(true);
+      expect(definedLabels.has("Test")).toBe(true);
+      expect(definedLabels.has("Run")).toBe(true);
+    });
+
+    it("skips tasks without labels", () => {
+      const tasks: TaskDefinition[] = [{ label: "Build" }, { icon: { id: "tools" } }];
+
+      const { definedLabels } = buildTasksMetadata([tasks]);
+
+      expect(definedLabels.size).toBe(1);
+      expect(definedLabels.has("Build")).toBe(true);
+    });
+
+    it("includes hidden tasks in defined labels", () => {
+      const tasks: TaskDefinition[] = [
+        { label: "Build", hide: true },
+        { label: "Test" },
+      ];
+
+      const { definedLabels } = buildTasksMetadata([tasks]);
+
+      expect(definedLabels.size).toBe(2);
+      expect(definedLabels.has("Build")).toBe(true);
+      expect(definedLabels.has("Test")).toBe(true);
+    });
+
+    it("collects labels from multiple folders", () => {
+      const folder1Tasks: TaskDefinition[] = [{ label: "Build" }];
+      const folder2Tasks: TaskDefinition[] = [{ label: "Test" }];
+
+      const { definedLabels } = buildTasksMetadata([folder1Tasks, folder2Tasks]);
+
+      expect(definedLabels.size).toBe(2);
+      expect(definedLabels.has("Build")).toBe(true);
+      expect(definedLabels.has("Test")).toBe(true);
+    });
+
+    it("deduplicates labels across folders", () => {
+      const folder1Tasks: TaskDefinition[] = [{ label: "Build" }];
+      const folder2Tasks: TaskDefinition[] = [{ label: "Build" }, { label: "Test" }];
+
+      const { definedLabels } = buildTasksMetadata([folder1Tasks, folder2Tasks]);
+
+      expect(definedLabels.size).toBe(2);
+    });
   });
 
-  it("returns empty set when no hidden tasks", () => {
-    const tasks: TaskDefinition[] = [{ label: "Build" }, { label: "Test", hide: false }];
+  describe("empty input", () => {
+    it("returns empty collections for empty input", () => {
+      const { iconMap, hiddenLabels, definedLabels } = buildTasksMetadata([]);
 
-    const hiddenSet = buildHiddenSetFromTasks([tasks]);
-
-    expect(hiddenSet.size).toBe(0);
+      expect(iconMap.size).toBe(0);
+      expect(hiddenLabels.size).toBe(0);
+      expect(definedLabels.size).toBe(0);
+    });
   });
 
-  it("returns empty set for empty input", () => {
-    const hiddenSet = buildHiddenSetFromTasks([]);
-    expect(hiddenSet.size).toBe(0);
+  describe("combined behavior", () => {
+    it("extracts all metadata in single pass", () => {
+      const tasks: TaskDefinition[] = [
+        { label: "Build", icon: { id: "tools" } },
+        { label: "Test", icon: { id: "beaker" }, hide: true },
+        { label: "Run" },
+      ];
+
+      const { iconMap, hiddenLabels, definedLabels } = buildTasksMetadata([tasks]);
+
+      // All labels should be in definedLabels
+      expect(definedLabels.size).toBe(3);
+
+      // Only Test is hidden
+      expect(hiddenLabels.size).toBe(1);
+      expect(hiddenLabels.has("Test")).toBe(true);
+
+      // Both Build and Test have icons
+      expect(iconMap.size).toBe(2);
+      expect(iconMap.get("Build")).toBe("tools");
+      expect(iconMap.get("Test")).toBe("beaker");
+    });
   });
 });

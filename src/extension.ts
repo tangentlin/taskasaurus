@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
 import { TaskasaurusController } from "./controller";
+import { disposeLogger, logInfo } from "./logger";
 
 let controller: TaskasaurusController | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
-  console.log("Taskasaurus activated");
+  logInfo("Taskasaurus activated");
 
   controller = new TaskasaurusController();
 
@@ -53,4 +54,5 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function deactivate(): void {
   // Cleanup handled by context.subscriptions
+  disposeLogger();
 }
