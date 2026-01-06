@@ -111,7 +111,13 @@ Timeout notes:
 
 ### Input tasks
 
-Use `vscode.tasks.fetchTasks()` to obtain all tasks available (including from providers). ([VS Code API][5])
+Taskasaurus displays **only tasks defined in `.vscode/tasks.json`** files. Auto-detected tasks from task providers (e.g., npm scripts, TypeScript tasks) are excluded to keep the status bar focused and user-controlled.
+
+**Implementation:**
+
+1. Parse `.vscode/tasks.json` (JSONC) from each workspace folder to extract task labels.
+2. Use `vscode.tasks.fetchTasks()` to obtain task objects. ([VS Code API][5])
+3. Filter the fetched tasks to include only those whose labels match entries in `tasks.json`.
 
 ### Hidden tasks
 
@@ -289,7 +295,7 @@ None by default (status-bar-first product). (You can add later.)
 ### Activation events (package.json)
 
 - `onStartupFinished`
-- (Optional) `workspaceContains:.vscode/tasks.json` (helps but tasks can be auto-detected, so don’t rely on it) ([Visual Studio Code][3])
+- `workspaceContains:.vscode/tasks.json` (since only `tasks.json` tasks are shown, this is reliable)
 
 ### Refresh triggers
 
@@ -426,7 +432,7 @@ Behavior:
 - [ ] Clicking any leaf executes the task and collapses all groups.
 - [ ] After 10s with no Taskasaurus click activity while expanded, collapses to default.
 - [ ] Labels can include two icons at left for child items (child icon + task icon).
-- [ ] Works with tasks from `.vscode/tasks.json` and auto-detected tasks. ([Visual Studio Code][3])
+- [ ] Only displays tasks defined in `.vscode/tasks.json` (auto-detected tasks from providers are excluded).
 - [ ] Multi-root: duplicate labels are disambiguated.
 - [ ] Tasks with `"hide": true` do not appear in the status bar and do not affect group formation.
 - [ ] Running tasks show `$(loading~spin)` indicator.

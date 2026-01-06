@@ -1,16 +1,13 @@
 import * as vscode from "vscode";
-import type { IconMap } from "./types";
 import {
   parseTasksJson,
-  buildIconMapFromTasks,
-  buildHiddenSetFromTasks,
+  buildTasksMetadata,
   TaskDefinition,
+  TasksJsonMetadata,
 } from "./iconParser";
+import { logTasksJsonFound, logTasksJsonNotFound } from "./logger";
 
-export type TasksJsonData = {
-  iconMap: IconMap;
-  hiddenLabels: Set<string>;
-};
+export type TasksJsonData = TasksJsonMetadata;
 
 async function readTasksJsonFromFolder(folder: vscode.WorkspaceFolder): Promise<TaskDefinition[]> {
   const tasksJsonUri = vscode.Uri.joinPath(folder.uri, ".vscode", "tasks.json");
@@ -18,9 +15,12 @@ async function readTasksJsonFromFolder(folder: vscode.WorkspaceFolder): Promise<
   try {
     const content = await vscode.workspace.fs.readFile(tasksJsonUri);
     const text = new TextDecoder("utf-8").decode(content);
-    return parseTasksJson(text);
+    const tasks = parseTasksJson(text);
+    logTasksJsonFound(folder.name, tasksJsonUri.fsPath, tasks.length);
+    return tasks;
   } catch {
     // File doesn't exist or can't be read - that's OK
+    logTasksJsonNotFound(folder.name);
   }
 
   return [];
@@ -35,14 +35,5 @@ export async function loadTasksJsonData(): Promise<TasksJsonData> {
     tasksByFolder.push(tasks);
   }
 
-  return {
-    iconMap: buildIconMapFromTasks(tasksByFolder),
-    hiddenLabels: buildHiddenSetFromTasks(tasksByFolder),
-  };
-}
-
-/** @deprecated Use loadTasksJsonData() instead */
-export async function loadIconMap(): Promise<IconMap> {
-  const data = await loadTasksJsonData();
-  return data.iconMap;
+  return buildTasksMetadata(tasksByFolder);
 }
