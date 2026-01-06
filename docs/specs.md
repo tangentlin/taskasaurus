@@ -82,10 +82,11 @@ Status bar text supports codicons like `$(chevron-right)` and multiple icons. ([
 
 Tooltips:
 
-- Parent: “Expand group ‘Test’”
+- Parent: "Expand group 'Test'"
 - Child: "Run task 'Test/unit'"
-- Root leaf: “Run task ‘Build’”
+- Root leaf: "Run task 'Build'"
 - Include `task.source` and workspace folder name in tooltip for multi-root disambiguation.
+- **Detail override:** If the task has a non-empty `detail` property in its JSON definition, use that value as the tooltip instead of the default format.
 
 ### Interaction rules (accordion)
 

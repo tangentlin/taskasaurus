@@ -170,6 +170,48 @@ describe("buildVisibleItems", () => {
     expect(items[0].tooltip).toBe("Run task 'Build'\n(Workspace • api)");
   });
 
+  it("uses detail as tooltip when provided", () => {
+    const roots: RootNode[] = [
+      {
+        id: "rootLeaf::Build",
+        kind: "rootLeaf",
+        label: "Build",
+        taskKey: { label: "Build", source: "Workspace", detail: "Build the entire project" },
+      },
+    ];
+    const items = buildVisibleItems(roots, {});
+
+    expect(items[0].tooltip).toBe("Build the entire project");
+  });
+
+  it("uses default tooltip when detail is empty string", () => {
+    const roots: RootNode[] = [
+      {
+        id: "rootLeaf::Build",
+        kind: "rootLeaf",
+        label: "Build",
+        taskKey: { label: "Build", source: "Workspace", detail: "" },
+      },
+    ];
+    const items = buildVisibleItems(roots, {});
+
+    expect(items[0].tooltip).toBe("Run task 'Build'\n(Workspace)");
+  });
+
+  it("uses default tooltip when detail is undefined", () => {
+    const roots: RootNode[] = [
+      {
+        id: "rootLeaf::Build",
+        kind: "rootLeaf",
+        label: "Build",
+        taskKey: { label: "Build", source: "Workspace", detail: undefined },
+      },
+    ];
+    const items = buildVisibleItems(roots, {});
+
+    expect(items[0].tooltip).toBe("Run task 'Build'\n(Workspace)");
+  });
+
   it("sets correct commandArgs with nodeId", () => {
     const roots = [createRootLeaf("Build")];
     const items = buildVisibleItems(roots, {});
