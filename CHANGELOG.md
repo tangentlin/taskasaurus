@@ -4,6 +4,27 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.2.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.1.3...v1.2.0)
+
+### 🚀 Enhancements
+
+- Use task detail property as tooltip when available ([#17](https://github.com/tangentlin/taskasaurus/pull/17))
+
+### 🩹 Fixes
+
+- Improve changelog generation with deduplication and proper formatting ([#18](https://github.com/tangentlin/taskasaurus/pull/18))
+
+### 🏡 Chore
+
+- Bump version to 1.1.3 ([65b7b9d](https://github.com/tangentlin/taskasaurus/commit/65b7b9d))
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+- Tangent Lin
+
 ## [v1.1.3](https://github.com/tangentlin/taskasaurus/compare/v1.1.2...v1.1.3)
 
 ### 🩹 Fixes
