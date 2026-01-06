@@ -10,6 +10,7 @@ export function createTaskKey(task: vscode.Task): TaskKey {
         ? (task.scope as vscode.WorkspaceFolder).name
         : undefined,
     definitionType: task.definition?.type,
+    detail: task.detail || undefined,
   };
 }
 
