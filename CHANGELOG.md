@@ -4,41 +4,51 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
-## v1.1.2...v1.1.3
-
-[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.1.2...v1.1.3)
+## [v1.1.3](https://github.com/tangentlin/taskasaurus/compare/v1.1.2...v1.1.3)
 
 ### 🩹 Fixes
 
-- Improve release workflow changelog generation and asset upload ([fecb7e4](https://github.com/tangentlin/taskasaurus/commit/fecb7e4))
 - Improve release workflow changelog generation and asset upload ([#16](https://github.com/tangentlin/taskasaurus/pull/16))
 
-### ❤️ Contributors
+## [v1.1.2](https://github.com/tangentlin/taskasaurus/compare/v1.1.1...v1.1.2)
 
-- Tianzhen Lin (Tangent) <tangent@usa.net>
-- Tangent Lin
+### ✨ Features
 
-## [1.1.1](https://github.com/tangentlin/taskasaurus/compare/v1.1.0...v1.1.1)
+- Add /pr slash command for streamlined pull request creation ([#15](https://github.com/tangentlin/taskasaurus/pull/15))
 
-### Bug Fixes
+## [v1.1.1](https://github.com/tangentlin/taskasaurus/compare/v1.1.0...v1.1.1)
 
-- Filter status bar to only show tasks.json tasks (#12)
+### 🐛 Bug Fixes
 
-### Documentation
+- Filter status bar to only show tasks.json tasks ([#12](https://github.com/tangentlin/taskasaurus/pull/12))
 
-- Add release workflow documentation (#9)
+### 📖 Documentation
 
-### CI
+- Add release workflow documentation ([#9](https://github.com/tangentlin/taskasaurus/pull/9))
 
-- Add Open VSX publishing to release workflow (#13)
+### 🏗️ CI
 
-## [1.0.1]
+- Add Open VSX publishing to release workflow ([#13](https://github.com/tangentlin/taskasaurus/pull/13))
+
+## [v1.1.0](https://github.com/tangentlin/taskasaurus/compare/v1.0.1...v1.1.0)
+
+### ✨ Features
+
+- Add run feedback indicators in status bar ([#7](https://github.com/tangentlin/taskasaurus/pull/7))
+  - Spinning icon while task runs
+  - Checkmark on successful completion
+  - Error icon on failure
+  - Auto-clears after 2 seconds
+
+## [v1.0.1](https://github.com/tangentlin/taskasaurus/compare/v1.0.0...v1.0.1)
+
+### 🔧 Changes
 
 - Change hierarchical task grouping with `:` delimiter
 
-## [1.0.0]
+## v1.0.0
 
-### Initial Release
+### 🎉 Initial Release
 
 - Status bar task launcher for VS Code
 - Support for `.vscode/tasks.json` task discovery
