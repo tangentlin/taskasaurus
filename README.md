@@ -76,7 +76,8 @@ Add icons to your tasks using the `icon` property with any [VS Code codicon](htt
       "label": "Package",
       "type": "shell",
       "command": "npm run build",
-      "icon": { "id": "build" }
+      "icon": { "id": "build" },
+      "detail": "Build and bundle for production"
     },
     {
       "label": "Run",
@@ -88,7 +89,8 @@ Add icons to your tasks using the `icon` property with any [VS Code codicon](htt
       "label": "Test/unit",
       "type": "shell",
       "command": "npm run test:unit",
-      "icon": { "id": "beaker" }
+      "icon": { "id": "beaker" },
+      "detail": "Run unit tests with Vitest"
     },
     {
       "label": "Test/e2e",
@@ -159,6 +161,7 @@ Taskasaurus provides these commands (accessible via Command Palette):
 2. **Use consistent naming** - `Category/action` format works best for grouping
 3. **Add icons** - Visual cues make tasks easier to identify at a glance
 4. **Hide background tasks** - Use `hide: true` for watchers and internal scripts
+5. **Custom tooltips** - Add a `detail` property to display a custom tooltip when hovering over a task
 
 ## License
 
