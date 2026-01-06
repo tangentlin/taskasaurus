@@ -60,6 +60,7 @@ jobs:
       - name: Upload .vsix to release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           files: "*.vsix"
 
       - name: Generate changelog
@@ -71,15 +72,18 @@ jobs:
           if [ "$PREV_TAG" = "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
             # First release or no previous tag
             echo "Generating changelog for first release"
-            pnpm exec changelogen --no-commit --no-tag --output CHANGELOG.md > release-notes.md
+            pnpm exec changelogen --no-commit --no-tag --output CHANGELOG.md
           else
             echo "Generating changelog from $PREV_TAG to $CURRENT_TAG"
-            pnpm exec changelogen --from "$PREV_TAG" --to "$CURRENT_TAG" --no-commit --no-tag --output CHANGELOG.md > release-notes.md
+            pnpm exec changelogen --from "$PREV_TAG" --to "$CURRENT_TAG" --no-commit --no-tag --output CHANGELOG.md
           fi
+          # Extract the latest version section from CHANGELOG.md for release notes
+          awk '/^## \[?[0-9]+\.[0-9]+\.[0-9]+/{if(found) exit; found=1} found' CHANGELOG.md > release-notes.md
 
       - name: Update GitHub release notes
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           body_path: release-notes.md
 
       - name: Commit version bump and changelog
