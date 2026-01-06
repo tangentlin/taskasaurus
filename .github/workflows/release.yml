@@ -54,6 +54,9 @@ jobs:
       - name: Publish to VS Code Marketplace
         run: pnpm exec vsce publish --no-dependencies -p ${{ secrets.VSCE_PAT }}
 
+      - name: Publish to Open VSX
+        run: pnpm exec ovsx publish --no-dependencies -p ${{ secrets.OVSX_PAT }}
+
       - name: Upload .vsix to release
         uses: softprops/action-gh-release@v2
         with:
