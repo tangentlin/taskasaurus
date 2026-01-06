@@ -65,7 +65,17 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          pnpm exec changelogen --no-commit --no-tag --output CHANGELOG.md > release-notes.md
+          CURRENT_TAG="${{ github.event.release.tag_name }}"
+          # Get the tag before the current one (sorted by version)
+          PREV_TAG=$(git tag --sort=-version:refname | grep -A1 "^${CURRENT_TAG}$" | tail -1)
+          if [ "$PREV_TAG" = "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
+            # First release or no previous tag
+            echo "Generating changelog for first release"
+            pnpm exec changelogen --no-commit --no-tag --output CHANGELOG.md > release-notes.md
+          else
+            echo "Generating changelog from $PREV_TAG to $CURRENT_TAG"
+            pnpm exec changelogen --from "$PREV_TAG" --to "$CURRENT_TAG" --no-commit --no-tag --output CHANGELOG.md > release-notes.md
+          fi
 
       - name: Update GitHub release notes
         uses: softprops/action-gh-release@v2
