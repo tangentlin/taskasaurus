@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(pnpm run check:*)",
+      "Bash(npx tsc:*)",
+      "Bash(sl diff:*)",
+      "Bash(sl pr:*)",
+      "Bash(sl pr submit:*)",
+      "Bash(sl log:*)",
+      "Bash(sl metaedit:*)",
+      "Bash(sl status:*)",
+      "Bash(sl st)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:sapling-scm.com)"
+    ]
+  }
+}
