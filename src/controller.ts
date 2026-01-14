@@ -5,6 +5,7 @@ import { createTaskKey, resolveTask, taskKeyToId } from "./taskKey";
 import { StatusBarRenderer } from "./statusBar";
 import { loadTasksJsonData } from "./iconLoader";
 import { logInfo, logTaskSource, logFilteringSummary } from "./logger";
+import { getConfig } from "./config";
 
 const AUTO_COLLAPSE_TIMEOUT_MS = 10_000;
 const REFRESH_DEBOUNCE_MS = 250;
@@ -82,6 +83,8 @@ export class TaskasaurusController {
   async refresh(): Promise<void> {
     logInfo("Refreshing task list...");
 
+    const config = getConfig();
+
     const [allTasks, tasksJsonData] = await Promise.all([
       vscode.tasks.fetchTasks(),
       loadTasksJsonData(),
@@ -111,7 +114,7 @@ export class TaskasaurusController {
     logFilteringSummary(allTasks.length, visibleTasks.length, filteredCount);
 
     this.tasks = visibleTasks;
-    this.roots = buildHierarchy(this.tasks, tasksJsonData.iconMap);
+    this.roots = buildHierarchy(this.tasks, tasksJsonData.iconMap, config.groupDelimiter);
     disambiguateLabels(this.roots);
     this.render();
   }

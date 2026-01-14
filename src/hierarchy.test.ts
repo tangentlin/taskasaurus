@@ -133,6 +133,70 @@ describe("buildHierarchy", () => {
   });
 });
 
+describe("buildHierarchy with custom delimiter", () => {
+  const emptyIconMap: IconMap = new Map();
+
+  it("uses default delimiter when not specified", () => {
+    const tasks = [mockTask("Test/unit"), mockTask("Test/e2e")];
+    const result = buildHierarchy(tasks, emptyIconMap);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].kind).toBe("parent");
+    expect(result[0].label).toBe("Test");
+  });
+
+  it("uses colon as custom delimiter", () => {
+    const tasks = [mockTask("Test:unit"), mockTask("Test:e2e")];
+    const result = buildHierarchy(tasks, emptyIconMap, ":");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].kind).toBe("parent");
+    expect(result[0].label).toBe("Test");
+  });
+
+  it("does not group by slash when using colon delimiter", () => {
+    const tasks = [mockTask("Test/unit"), mockTask("Test/e2e")];
+    const result = buildHierarchy(tasks, emptyIconMap, ":");
+
+    // With colon delimiter, slashes are not treated as group separators
+    expect(result).toHaveLength(2);
+    expect(result.every((n) => n.kind === "rootLeaf")).toBe(true);
+  });
+
+  it("handles dot as delimiter", () => {
+    const tasks = [mockTask("Build.debug"), mockTask("Build.release")];
+    const result = buildHierarchy(tasks, emptyIconMap, ".");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].kind).toBe("parent");
+    expect(result[0].label).toBe("Build");
+  });
+
+  it("handles pipe as delimiter", () => {
+    const tasks = [mockTask("Test|unit"), mockTask("Test|integration")];
+    const result = buildHierarchy(tasks, emptyIconMap, "|");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].kind).toBe("parent");
+    expect(result[0].label).toBe("Test");
+  });
+
+  it("handles runnable parent with custom delimiter", () => {
+    const tasks = [mockTask("Test"), mockTask("Test:unit"), mockTask("Test:e2e")];
+    const result = buildHierarchy(tasks, emptyIconMap, ":");
+
+    expect(result).toHaveLength(1);
+    const testGroup = result[0];
+    expect(testGroup.kind).toBe("parent");
+
+    if (testGroup.kind === "parent") {
+      expect(testGroup.runnableTaskKey).toBeDefined();
+      expect(testGroup.children).toHaveLength(3);
+      expect(testGroup.children[0].label).toBe("Test");
+    }
+  });
+});
+
 describe("disambiguateLabels", () => {
   const emptyIconMap: IconMap = new Map();
 
