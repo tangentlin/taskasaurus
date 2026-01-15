@@ -51,7 +51,7 @@ Taskasaurus automatically groups tasks that share a common prefix separated by a
     { "label": "Package", "type": "shell", "command": "npm run build" },
     { "label": "Run", "type": "shell", "command": "npm start" },
     { "label": "Test/unit", "type": "shell", "command": "npm run test:unit" },
-    { "label": "Test/e2e", "type": "shell", "command": "npm run test:e2e" },
+    { "label": "Test/e2e", "type": "shell", "command": "npm run test:e2e" }
   ]
 }
 ```

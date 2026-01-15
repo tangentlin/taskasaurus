@@ -331,8 +331,8 @@ type RootLeafNode = {
 type ParentNode = {
   id: NodeId;
   kind: "parent";
-  label: string;          // group label (e.g., "Test")
-  iconId?: string;        // if group has a runnable task named exactly label, icon belongs to that task; otherwise omit
+  label: string; // group label (e.g., "Test")
+  iconId?: string; // if group has a runnable task named exactly label, icon belongs to that task; otherwise omit
   children: ChildLeafNode[];
   runnableTaskKey?: TaskKey; // only if an actual task label == group label exists
 };
@@ -340,7 +340,7 @@ type ParentNode = {
 type ChildLeafNode = {
   id: NodeId;
   kind: "childLeaf";
-  label: string;          // full task label ("Test/unit")
+  label: string; // full task label ("Test/unit")
   taskKey: TaskKey;
   iconId?: string;
 };
@@ -348,7 +348,7 @@ type ChildLeafNode = {
 type TaskKey = {
   label: string;
   source: string;
-  folder?: string;     // workspace folder name (if applicable)
+  folder?: string; // workspace folder name (if applicable)
   definitionType?: string;
 };
 ```
