@@ -20,7 +20,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
-- Tangent Lin
 
 ## v1.2.0
 
@@ -41,7 +40,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
-- Tangent Lin
 
 ## [v1.1.3](https://github.com/tangentlin/taskasaurus/compare/v1.1.2...v1.1.3)
 
