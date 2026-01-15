@@ -2,33 +2,6 @@
 
 Future features under consideration, roughly ordered by priority.
 
-## Custom delimiter configuration
-
-Allow users to configure the grouping delimiter instead of hardcoding `:`.
-
-**Behavior:**
-
-- Default delimiter remains `:` (colon)
-- Users can override via workspace or user settings:
-  ```json
-  {
-    "taskasaurus.groupDelimiter": "/"
-  }
-  ```
-- Examples of alternate conventions:
-  - `build/dev`, `build/prod` (slash)
-  - `test-unit`, `test-e2e` (hyphen)
-
-**Implementation notes:**
-
-- Add configuration contribution in `package.json`
-- Update `parseGroupName()` in hierarchy builder to use configured delimiter
-- Re-render on configuration change
-
-**Why:**
-
-Different teams/projects have different naming conventions. This removes friction for adoption without changing defaults.
-
 ## Configurable auto-collapse timeout
 
 Allow users to customize or disable the 10-second auto-collapse behavior.
