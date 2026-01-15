@@ -4,6 +4,24 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.3.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.2.0...v1.3.0)
+
+### 🚀 Enhancements
+
+- Add configurable group delimiter setting ([#20](https://github.com/tangentlin/taskasaurus/pull/20))
+
+### 🏡 Chore
+
+- Bump version to 1.2.0 ([27d1341](https://github.com/tangentlin/taskasaurus/commit/27d1341))
+- Add Git support to PR command with smart diff detection ([#19](https://github.com/tangentlin/taskasaurus/pull/19))
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+- Tangent Lin
+
 ## v1.2.0
 
 [compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.1.3...v1.2.0)
