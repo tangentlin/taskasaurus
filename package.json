@@ -35,20 +35,20 @@
     "changelog": "changelogen --no-commit --no-tag"
   },
   "dependencies": {
-    "jsonc-parser": "^3.2.1"
+    "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.2.0",
-    "@commitlint/config-conventional": "^20.2.0",
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
     "@vitest/coverage-v8": "^4.0.16",
     "@vscode/vsce": "^3.7.1",
     "changelogen": "^0.6.2",
-    "esbuild": "^0.19.12",
-    "ovsx": "^0.10.7",
-    "oxfmt": "^0.21.0",
-    "oxlint": "^1.36.0",
+    "esbuild": "^0.27.2",
+    "ovsx": "^0.10.8",
+    "oxfmt": "^0.24.0",
+    "oxlint": "^1.39.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
   },
@@ -66,7 +66,20 @@
         "command": "taskasaurus.collapse",
         "title": "Taskasaurus: Collapse All Groups"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Taskasaurus",
+      "properties": {
+        "taskasaurus.groupDelimiter": {
+          "type": "string",
+          "default": "/",
+          "maxLength": 1,
+          "minLength": 1,
+          "description": "Character used to separate group names from task names (e.g., with '/', 'Test/unit' belongs to group 'Test').",
+          "markdownDescription": "Character used to separate group names from task names.\n\nWith delimiter `/`, a task named `Test/unit` belongs to group `Test`.\n\n**Common delimiters:** `/` (default), `:`, `.`, `|`"
+        }
+      }
+    }
   },
   "activationEvents": [
     "onStartupFinished",

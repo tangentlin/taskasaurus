@@ -19,12 +19,12 @@ type TaskInfo = {
   originalIndex: number;
 };
 
-function parseGroupName(label: string): string | undefined {
-  const slashIndex = label.indexOf("/");
-  if (slashIndex === -1) {
+function parseGroupName(label: string, delimiter: string): string | undefined {
+  const delimiterIndex = label.indexOf(delimiter);
+  if (delimiterIndex === -1) {
     return undefined;
   }
-  return label.substring(0, slashIndex).trim();
+  return label.substring(0, delimiterIndex).trim();
 }
 
 function getTaskIconId(task: vscode.Task, iconMap: IconMap): string | undefined {
@@ -48,13 +48,17 @@ function generateNodeId(kind: string, key: TaskKey | string): NodeId {
   return `${kind}::${taskKeyToId(key)}`;
 }
 
-export function buildHierarchy(tasks: vscode.Task[], iconMap: IconMap): RootNode[] {
+export function buildHierarchy(
+  tasks: vscode.Task[],
+  iconMap: IconMap,
+  delimiter: string = "/",
+): RootNode[] {
   // Step 1: Build TaskInfo for each task
   const taskInfos: TaskInfo[] = tasks.map((task, index) => ({
     task,
     taskKey: createTaskKey(task),
     label: task.name,
-    groupName: parseGroupName(task.name),
+    groupName: parseGroupName(task.name, delimiter),
     iconId: getTaskIconId(task, iconMap),
     originalIndex: index,
   }));

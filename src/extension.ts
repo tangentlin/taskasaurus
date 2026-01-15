@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { TaskasaurusController } from "./controller";
 import { disposeLogger, logInfo } from "./logger";
+import { affectsTaskasaurusConfig } from "./config";
 
 let controller: TaskasaurusController | undefined;
 
@@ -35,6 +36,13 @@ export function activate(context: vscode.ExtensionContext): void {
         document.uri.fsPath.endsWith(".vscode/tasks.json") ||
         document.uri.fsPath.endsWith(".vscode\\tasks.json")
       ) {
+        controller?.scheduleRefresh();
+      }
+    }),
+
+    // Refresh when Taskasaurus configuration changes
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (affectsTaskasaurusConfig(event)) {
         controller?.scheduleRefresh();
       }
     }),
