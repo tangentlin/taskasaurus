@@ -77,6 +77,13 @@
           "minLength": 1,
           "description": "Character used to separate group names from task names (e.g., with '/', 'Test/unit' belongs to group 'Test').",
           "markdownDescription": "Character used to separate group names from task names.\n\nWith delimiter `/`, a task named `Test/unit` belongs to group `Test`.\n\n**Common delimiters:** `/` (default), `:`, `.`, `|`"
+        },
+        "taskasaurus.autoCollapseTimeout": {
+          "type": "integer",
+          "default": 10000,
+          "minimum": 0,
+          "description": "Time in milliseconds before expanded groups auto-collapse. Set to 0 to disable auto-collapse.",
+          "markdownDescription": "Time in milliseconds before expanded groups automatically collapse.\n\n**Default:** `10000` (10 seconds)\n\n**Set to `0`** to disable auto-collapse entirely."
         }
       }
     }
