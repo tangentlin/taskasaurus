@@ -234,9 +234,16 @@ export class TaskasaurusController {
 
   private startCollapseTimer(): void {
     this.clearCollapseTimer();
+    const timeout = vscode.workspace
+      .getConfiguration("taskasaurus")
+      .get<number>("autoCollapseTimeout", AUTO_COLLAPSE_TIMEOUT_MS);
+    if (timeout === 0) {
+      // Auto-collapse disabled
+      return;
+    }
     this.uiState.collapseTimer = setTimeout(() => {
       this.collapse();
-    }, AUTO_COLLAPSE_TIMEOUT_MS);
+    }, timeout);
   }
 
   private resetCollapseTimer(): void {
