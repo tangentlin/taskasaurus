@@ -4,6 +4,31 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.4.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.3.0...v1.4.0)
+
+### 🚀 Enhancements
+
+- Add configurable auto-collapse timeout setting ([#23](https://github.com/tangentlin/taskasaurus/pull/23))
+
+### 📖 Documentation
+
+- Remove completed delimiter config from roadmap ([#21](https://github.com/tangentlin/taskasaurus/pull/21))
+
+### 🏡 Chore
+
+- Bump version to 1.3.0 ([40212d0](https://github.com/tangentlin/taskasaurus/commit/40212d0))
+
+### 🤖 CI
+
+- Generate changelog before publishing to include in marketplace releases ([#22](https://github.com/tangentlin/taskasaurus/pull/22))
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+- Tangent Lin
+
 ## v1.3.0
 
 [compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.2.0...v1.3.0)
