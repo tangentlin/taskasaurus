@@ -47,8 +47,8 @@
     "changelogen": "^0.6.2",
     "esbuild": "^0.27.2",
     "ovsx": "^0.10.8",
-    "oxfmt": "^0.24.0",
-    "oxlint": "^1.39.0",
+    "oxfmt": "^0.26.0",
+    "oxlint": "^1.41.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
   },
