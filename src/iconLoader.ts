@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import {
-  parseTasksJson,
-  parseTasksJsonGroupOverrides,
+  parseTasksJsonFull,
   buildTasksMetadata,
   TaskDefinition,
   TasksJsonMetadata,
@@ -24,8 +23,7 @@ async function readTasksJsonFromFolder(
   try {
     const content = await vscode.workspace.fs.readFile(tasksJsonUri);
     const text = new TextDecoder("utf-8").decode(content);
-    const tasks = parseTasksJson(text);
-    const groupOverrides = parseTasksJsonGroupOverrides(text);
+    const { tasks, groupOverrides } = parseTasksJsonFull(text);
     logTasksJsonFound(folder.name, tasksJsonUri.fsPath, tasks.length);
     return { tasks, groupOverrides };
   } catch {
