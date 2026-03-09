@@ -36,7 +36,8 @@ export function getConfig(): TaskasaurusConfig {
   if (rawGroups && typeof rawGroups === "object") {
     for (const [key, value] of Object.entries(rawGroups)) {
       if (value && typeof value === "object") {
-        groupOverrides.set(key, { shortLabel: value.shortLabel });
+        const shortLabel = typeof value.shortLabel === "boolean" ? value.shortLabel : undefined;
+        groupOverrides.set(key, { shortLabel });
       }
     }
   }

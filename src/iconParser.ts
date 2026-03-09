@@ -33,34 +33,33 @@ export type TasksJsonMetadata = {
   groupOverrides: Map<string, GroupOverride>;
 };
 
-export function parseTasksJson(text: string): TaskDefinition[] {
-  try {
-    const parsed = jsonc.parse(text) as TasksJson;
-    if (parsed && Array.isArray(parsed.tasks)) {
-      return parsed.tasks;
-    }
-  } catch {
-    // Invalid JSON - return empty array
-  }
-  return [];
-}
-
 export type TasksJsonGroupOverrides = Map<string, GroupOverride>;
 
-export function parseTasksJsonGroupOverrides(text: string): TasksJsonGroupOverrides {
+type ParsedTasksJson = {
+  tasks: TaskDefinition[];
+  groupOverrides: TasksJsonGroupOverrides;
+};
+
+export function parseTasksJson(text: string): TaskDefinition[] {
+  return parseTasksJsonFull(text).tasks;
+}
+
+export function parseTasksJsonFull(text: string): ParsedTasksJson {
   try {
     const parsed = jsonc.parse(text) as TasksJson;
-    const overrides = new Map<string, GroupOverride>();
+    const tasks = parsed && Array.isArray(parsed.tasks) ? parsed.tasks : [];
+    const groupOverrides = new Map<string, GroupOverride>();
     if (parsed?.taskasaurus?.groups && typeof parsed.taskasaurus.groups === "object") {
       for (const [key, value] of Object.entries(parsed.taskasaurus.groups)) {
         if (value && typeof value === "object") {
-          overrides.set(key, { shortLabel: value.shortLabel });
+          const shortLabel = typeof value.shortLabel === "boolean" ? value.shortLabel : undefined;
+          groupOverrides.set(key, { shortLabel });
         }
       }
     }
-    return overrides;
+    return { tasks, groupOverrides };
   } catch {
-    return new Map();
+    return { tasks: [], groupOverrides: new Map() };
   }
 }
 

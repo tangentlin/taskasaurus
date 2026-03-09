@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   parseTasksJson,
-  parseTasksJsonGroupOverrides,
+  parseTasksJsonFull,
   buildTasksMetadata,
   TaskDefinition,
   TasksJsonGroupOverrides,
@@ -91,14 +91,14 @@ describe("parseTasksJson", () => {
   });
 });
 
-describe("parseTasksJsonGroupOverrides", () => {
+describe("parseTasksJsonFull", () => {
   it("returns empty map for plain tasks.json without taskasaurus key", () => {
     const json = `{
       "version": "2.0.0",
       "tasks": [{ "label": "Build" }]
     }`;
-    const overrides = parseTasksJsonGroupOverrides(json);
-    expect(overrides.size).toBe(0);
+    const { groupOverrides } = parseTasksJsonFull(json);
+    expect(groupOverrides.size).toBe(0);
   });
 
   it("extracts group overrides from taskasaurus key", () => {
@@ -112,10 +112,11 @@ describe("parseTasksJsonGroupOverrides", () => {
         }
       }
     }`;
-    const overrides = parseTasksJsonGroupOverrides(json);
-    expect(overrides.size).toBe(2);
-    expect(overrides.get("Test")?.shortLabel).toBe(false);
-    expect(overrides.get("Check")?.shortLabel).toBe(true);
+    const { tasks, groupOverrides } = parseTasksJsonFull(json);
+    expect(tasks).toHaveLength(1);
+    expect(groupOverrides.size).toBe(2);
+    expect(groupOverrides.get("Test")?.shortLabel).toBe(false);
+    expect(groupOverrides.get("Check")?.shortLabel).toBe(true);
   });
 
   it("handles JSONC with comments", () => {
@@ -128,20 +129,21 @@ describe("parseTasksJsonGroupOverrides", () => {
         }
       }
     }`;
-    const overrides = parseTasksJsonGroupOverrides(json);
-    expect(overrides.size).toBe(1);
-    expect(overrides.get("Test")?.shortLabel).toBe(false);
+    const { groupOverrides } = parseTasksJsonFull(json);
+    expect(groupOverrides.size).toBe(1);
+    expect(groupOverrides.get("Test")?.shortLabel).toBe(false);
   });
 
-  it("returns empty map for invalid JSON", () => {
-    const overrides = parseTasksJsonGroupOverrides("not valid json");
-    expect(overrides.size).toBe(0);
+  it("returns empty results for invalid JSON", () => {
+    const { tasks, groupOverrides } = parseTasksJsonFull("not valid json");
+    expect(tasks).toEqual([]);
+    expect(groupOverrides.size).toBe(0);
   });
 
   it("returns empty map when taskasaurus.groups is missing", () => {
     const json = `{ "taskasaurus": {} }`;
-    const overrides = parseTasksJsonGroupOverrides(json);
-    expect(overrides.size).toBe(0);
+    const { groupOverrides } = parseTasksJsonFull(json);
+    expect(groupOverrides.size).toBe(0);
   });
 
   it("ignores non-object values in groups", () => {
@@ -153,9 +155,26 @@ describe("parseTasksJsonGroupOverrides", () => {
         }
       }
     }`;
-    const overrides = parseTasksJsonGroupOverrides(json);
-    expect(overrides.size).toBe(1);
-    expect(overrides.get("Check")?.shortLabel).toBe(true);
+    const { groupOverrides } = parseTasksJsonFull(json);
+    expect(groupOverrides.size).toBe(1);
+    expect(groupOverrides.get("Check")?.shortLabel).toBe(true);
+  });
+
+  it("ignores non-boolean shortLabel values", () => {
+    const json = `{
+      "taskasaurus": {
+        "groups": {
+          "Test": { "shortLabel": "yes" },
+          "Check": { "shortLabel": null },
+          "Build": { "shortLabel": true }
+        }
+      }
+    }`;
+    const { groupOverrides } = parseTasksJsonFull(json);
+    expect(groupOverrides.size).toBe(3);
+    expect(groupOverrides.get("Test")?.shortLabel).toBeUndefined();
+    expect(groupOverrides.get("Check")?.shortLabel).toBeUndefined();
+    expect(groupOverrides.get("Build")?.shortLabel).toBe(true);
   });
 });
 
