@@ -273,6 +273,56 @@ VS Code UX guidelines advise limiting status bar items and avoiding multiple ico
 
 ---
 
+## Short child labels spec
+
+### Goal
+
+When a group is expanded, strip the redundant group prefix from child labels to save status bar space. E.g., `Test/unit` displays as `unit` since the parent already shows "Test".
+
+### Configuration
+
+**Global setting** (`settings.json`):
+
+- `taskasaurus.shortChildLabels` — `boolean`, default `true`. When enabled, child labels strip the `GroupName + delimiter` prefix.
+
+**Per-group overrides** (`settings.json` and/or `tasks.json`):
+
+- `taskasaurus.groups` — object keyed by group name, each value `{ "shortLabel": boolean }`.
+- Overrides are **bidirectional**: a group can opt in or out regardless of the global setting.
+
+**`tasks.json` example:**
+
+```jsonc
+{
+  "tasks": [ ... ],
+  "taskasaurus": {
+    "groups": {
+      "Check": { "shortLabel": false }
+    }
+  }
+}
+```
+
+### Resolution order
+
+For a given group, the effective `shortLabel` value is resolved as:
+
+1. `tasks.json` → `taskasaurus.groups.<GroupName>.shortLabel` (highest priority)
+2. `settings.json` → `taskasaurus.groups.<GroupName>.shortLabel`
+3. `settings.json` → `taskasaurus.shortChildLabels` (global default)
+4. Built-in default: `true`
+
+### Display rules
+
+- **Stripping**: Remove `GroupName + delimiter` prefix from the child's label. E.g., with delimiter `/` and group `Test`, child `Test/unit` displays as `unit`.
+- **Tooltip**: Always shows the full task label regardless of the display setting.
+- **Sorting**: Always by full task label.
+- **Multi-root suffix**: Prefix is stripped; `【folder】` disambiguation suffix is preserved. E.g., `Test/unit【api】` → `unit【api】`.
+- **Promoted root leaves**: Single-child groups promoted to root leaves always show their full label (no stripping — there is no group context).
+- **No prefix match**: If the child label does not start with `GroupName + delimiter` (e.g., a task whose label exactly equals the group name), the label is shown as-is.
+
+---
+
 ## Commands (extension API surface)
 
 Even with “status bar only”, you still need command IDs for click handlers.

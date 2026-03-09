@@ -60,7 +60,7 @@ This creates:
 
 - `Package` - standalone task
 - `Run` - standalone task
-- `Test` - expandable group containing `Test/unit` and `Test/e2e`
+- `Test` - expandable group containing `unit` and `e2e`
 
 > **Note:** Groups are only created when there are 2 or more tasks with the same prefix.
 
@@ -134,9 +134,48 @@ When working with multiple workspace folders that have tasks with the same name,
 - `Build【api】`
 - `Build【web】`
 
+## Settings
+
+| Setting                           | Default | Description                                                                                |
+| --------------------------------- | ------- | ------------------------------------------------------------------------------------------ |
+| `taskasaurus.groupDelimiter`      | `"/"`   | Character used to separate group names from task names                                     |
+| `taskasaurus.shortChildLabels`    | `true`  | Strip the group prefix from child labels when expanded (e.g., `Test/unit` shows as `unit`) |
+| `taskasaurus.groups`              | `{}`    | Per-group overrides (see below)                                                            |
+| `taskasaurus.autoCollapseTimeout` | `10000` | Milliseconds before expanded groups auto-collapse (0 to disable)                           |
+
+### Per-Group Overrides
+
+You can override `shortChildLabels` for specific groups in either `settings.json` or `tasks.json`:
+
+**In `settings.json`:**
+
+```json
+{
+  "taskasaurus.shortChildLabels": true,
+  "taskasaurus.groups": {
+    "Deploy": { "shortLabel": false }
+  }
+}
+```
+
+**In `tasks.json`** (takes priority over `settings.json`):
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [ ... ],
+  "taskasaurus": {
+    "groups": {
+      "Deploy": { "shortLabel": false }
+    }
+  }
+}
+```
+
 ## Behavior
 
 - **Accordion mode** - Only one group can be expanded at a time
+- **Short child labels** - Expanded children strip the group prefix by default (e.g., `Test/unit` → `unit`)
 - **Auto-collapse** - Expanded groups automatically collapse after 10 seconds of inactivity
 - **Alphabetical sorting** - Tasks and groups are sorted alphabetically
 - **Auto-refresh** - The task list refreshes when you save `tasks.json` or change workspace folders

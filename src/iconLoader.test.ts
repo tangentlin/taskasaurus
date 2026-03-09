@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { parseTasksJson, buildTasksMetadata, TaskDefinition } from "./iconParser";
+import {
+  parseTasksJson,
+  parseTasksJsonGroupOverrides,
+  buildTasksMetadata,
+  TaskDefinition,
+  TasksJsonGroupOverrides,
+} from "./iconParser";
 
 describe("parseTasksJson", () => {
   it("parses valid tasks.json", () => {
@@ -82,6 +88,74 @@ describe("parseTasksJson", () => {
     expect(tasks[0].hide).toBe(true);
     expect(tasks[1].hide).toBe(false);
     expect(tasks[2].hide).toBeUndefined();
+  });
+});
+
+describe("parseTasksJsonGroupOverrides", () => {
+  it("returns empty map for plain tasks.json without taskasaurus key", () => {
+    const json = `{
+      "version": "2.0.0",
+      "tasks": [{ "label": "Build" }]
+    }`;
+    const overrides = parseTasksJsonGroupOverrides(json);
+    expect(overrides.size).toBe(0);
+  });
+
+  it("extracts group overrides from taskasaurus key", () => {
+    const json = `{
+      "version": "2.0.0",
+      "tasks": [{ "label": "Build" }],
+      "taskasaurus": {
+        "groups": {
+          "Test": { "shortLabel": false },
+          "Check": { "shortLabel": true }
+        }
+      }
+    }`;
+    const overrides = parseTasksJsonGroupOverrides(json);
+    expect(overrides.size).toBe(2);
+    expect(overrides.get("Test")?.shortLabel).toBe(false);
+    expect(overrides.get("Check")?.shortLabel).toBe(true);
+  });
+
+  it("handles JSONC with comments", () => {
+    const json = `{
+      "tasks": [],
+      // Taskasaurus config
+      "taskasaurus": {
+        "groups": {
+          "Test": { "shortLabel": false }
+        }
+      }
+    }`;
+    const overrides = parseTasksJsonGroupOverrides(json);
+    expect(overrides.size).toBe(1);
+    expect(overrides.get("Test")?.shortLabel).toBe(false);
+  });
+
+  it("returns empty map for invalid JSON", () => {
+    const overrides = parseTasksJsonGroupOverrides("not valid json");
+    expect(overrides.size).toBe(0);
+  });
+
+  it("returns empty map when taskasaurus.groups is missing", () => {
+    const json = `{ "taskasaurus": {} }`;
+    const overrides = parseTasksJsonGroupOverrides(json);
+    expect(overrides.size).toBe(0);
+  });
+
+  it("ignores non-object values in groups", () => {
+    const json = `{
+      "taskasaurus": {
+        "groups": {
+          "Test": "invalid",
+          "Check": { "shortLabel": true }
+        }
+      }
+    }`;
+    const overrides = parseTasksJsonGroupOverrides(json);
+    expect(overrides.size).toBe(1);
+    expect(overrides.get("Check")?.shortLabel).toBe(true);
   });
 });
 
@@ -245,11 +319,44 @@ describe("buildTasksMetadata", () => {
 
   describe("empty input", () => {
     it("returns empty collections for empty input", () => {
-      const { iconMap, hiddenLabels, definedLabels } = buildTasksMetadata([]);
+      const { iconMap, hiddenLabels, definedLabels, groupOverrides } = buildTasksMetadata([]);
 
       expect(iconMap.size).toBe(0);
       expect(hiddenLabels.size).toBe(0);
       expect(definedLabels.size).toBe(0);
+      expect(groupOverrides.size).toBe(0);
+    });
+  });
+
+  describe("groupOverrides", () => {
+    it("returns empty map when no group overrides provided", () => {
+      const tasks: TaskDefinition[] = [{ label: "Build" }];
+      const { groupOverrides } = buildTasksMetadata([tasks]);
+      expect(groupOverrides.size).toBe(0);
+    });
+
+    it("merges group overrides from single folder", () => {
+      const tasks: TaskDefinition[] = [{ label: "Build" }];
+      const overrides: TasksJsonGroupOverrides = new Map([["Test", { shortLabel: false }]]);
+      const { groupOverrides } = buildTasksMetadata([tasks], [overrides]);
+      expect(groupOverrides.size).toBe(1);
+      expect(groupOverrides.get("Test")?.shortLabel).toBe(false);
+    });
+
+    it("first folder wins for duplicate group overrides", () => {
+      const overrides1: TasksJsonGroupOverrides = new Map([["Test", { shortLabel: false }]]);
+      const overrides2: TasksJsonGroupOverrides = new Map([["Test", { shortLabel: true }]]);
+      const { groupOverrides } = buildTasksMetadata([[], []], [overrides1, overrides2]);
+      expect(groupOverrides.get("Test")?.shortLabel).toBe(false);
+    });
+
+    it("merges group overrides from multiple folders", () => {
+      const overrides1: TasksJsonGroupOverrides = new Map([["Test", { shortLabel: false }]]);
+      const overrides2: TasksJsonGroupOverrides = new Map([["Check", { shortLabel: true }]]);
+      const { groupOverrides } = buildTasksMetadata([[], []], [overrides1, overrides2]);
+      expect(groupOverrides.size).toBe(2);
+      expect(groupOverrides.get("Test")?.shortLabel).toBe(false);
+      expect(groupOverrides.get("Check")?.shortLabel).toBe(true);
     });
   });
 
