@@ -155,6 +155,27 @@ describe("getConfig groupOverrides", () => {
     expect(config.groupOverrides.size).toBe(0);
   });
 
+  it("treats non-boolean shortLabel as undefined", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => {
+        if (key === "groups") {
+          return {
+            Test: { shortLabel: "yes" },
+            Check: { shortLabel: null },
+            Build: { shortLabel: true },
+          };
+        }
+        return defaultValue;
+      }),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.groupOverrides.size).toBe(3);
+    expect(config.groupOverrides.get("Test")?.shortLabel).toBeUndefined();
+    expect(config.groupOverrides.get("Check")?.shortLabel).toBeUndefined();
+    expect(config.groupOverrides.get("Build")?.shortLabel).toBe(true);
+  });
+
   it("skips non-object values in groups", () => {
     vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
       get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => {
