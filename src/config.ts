@@ -2,8 +2,14 @@ import * as vscode from "vscode";
 
 export const DEFAULT_DELIMITER = "/";
 
+export type GroupOverride = {
+  shortLabel?: boolean;
+};
+
 export interface TaskasaurusConfig {
   groupDelimiter: string;
+  shortChildLabels: boolean;
+  groupOverrides: Map<string, GroupOverride>;
 }
 
 /**
@@ -23,9 +29,22 @@ function validateDelimiter(value: unknown): string {
 export function getConfig(): TaskasaurusConfig {
   const config = vscode.workspace.getConfiguration("taskasaurus");
   const rawDelimiter = config.get<string>("groupDelimiter", DEFAULT_DELIMITER);
+  const shortChildLabels = config.get<boolean>("shortChildLabels", true);
+  const rawGroups = config.get<Record<string, GroupOverride>>("groups", {});
+
+  const groupOverrides = new Map<string, GroupOverride>();
+  if (rawGroups && typeof rawGroups === "object") {
+    for (const [key, value] of Object.entries(rawGroups)) {
+      if (value && typeof value === "object") {
+        groupOverrides.set(key, { shortLabel: value.shortLabel });
+      }
+    }
+  }
 
   return {
     groupDelimiter: validateDelimiter(rawDelimiter),
+    shortChildLabels: typeof shortChildLabels === "boolean" ? shortChildLabels : true,
+    groupOverrides,
   };
 }
 

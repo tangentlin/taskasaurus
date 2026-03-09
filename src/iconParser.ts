@@ -1,5 +1,6 @@
 import * as jsonc from "jsonc-parser";
 import type { IconMap } from "./types";
+import type { GroupOverride } from "./config";
 
 export type TaskDefinition = {
   label?: string;
@@ -13,6 +14,9 @@ export type TaskDefinition = {
 export type TasksJson = {
   version?: string;
   tasks?: TaskDefinition[];
+  taskasaurus?: {
+    groups?: Record<string, { shortLabel?: boolean }>;
+  };
 };
 
 /**
@@ -25,6 +29,8 @@ export type TasksJsonMetadata = {
   hiddenLabels: Set<string>;
   /** Set of all task labels defined in tasks.json */
   definedLabels: Set<string>;
+  /** Per-group overrides from tasks.json taskasaurus config */
+  groupOverrides: Map<string, GroupOverride>;
 };
 
 export function parseTasksJson(text: string): TaskDefinition[] {
@@ -39,11 +45,33 @@ export function parseTasksJson(text: string): TaskDefinition[] {
   return [];
 }
 
+export type TasksJsonGroupOverrides = Map<string, GroupOverride>;
+
+export function parseTasksJsonGroupOverrides(text: string): TasksJsonGroupOverrides {
+  try {
+    const parsed = jsonc.parse(text) as TasksJson;
+    const overrides = new Map<string, GroupOverride>();
+    if (parsed?.taskasaurus?.groups && typeof parsed.taskasaurus.groups === "object") {
+      for (const [key, value] of Object.entries(parsed.taskasaurus.groups)) {
+        if (value && typeof value === "object") {
+          overrides.set(key, { shortLabel: value.shortLabel });
+        }
+      }
+    }
+    return overrides;
+  } catch {
+    return new Map();
+  }
+}
+
 /**
  * Build all task metadata from tasks.json definitions in a single pass.
  * Extracts icon mappings, hidden labels, and all defined labels.
  */
-export function buildTasksMetadata(tasksByFolder: TaskDefinition[][]): TasksJsonMetadata {
+export function buildTasksMetadata(
+  tasksByFolder: TaskDefinition[][],
+  groupOverridesByFolder: TasksJsonGroupOverrides[] = [],
+): TasksJsonMetadata {
   const iconMap: IconMap = new Map();
   const hiddenLabels = new Set<string>();
   const definedLabels = new Set<string>();
@@ -65,5 +93,15 @@ export function buildTasksMetadata(tasksByFolder: TaskDefinition[][]): TasksJson
     }
   }
 
-  return { iconMap, hiddenLabels, definedLabels };
+  // Merge group overrides across folders (first folder wins)
+  const groupOverrides = new Map<string, GroupOverride>();
+  for (const folderOverrides of groupOverridesByFolder) {
+    for (const [key, value] of folderOverrides) {
+      if (!groupOverrides.has(key)) {
+        groupOverrides.set(key, value);
+      }
+    }
+  }
+
+  return { iconMap, hiddenLabels, definedLabels, groupOverrides };
 }
