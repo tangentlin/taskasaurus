@@ -1,13 +1,18 @@
 import * as vscode from "vscode";
 import type { RootNode, NodeId, UIState } from "./types";
-import { buildVisibleItems, COMMAND_ID, FeedbackMap } from "./statusBarModel";
+import { buildVisibleItems, COMMAND_ID, FeedbackMap, ShortLabelConfig } from "./statusBarModel";
 
 export class StatusBarRenderer {
   private items: vscode.StatusBarItem[] = [];
   private nodeIdToItem = new Map<NodeId, vscode.StatusBarItem>();
 
-  render(roots: RootNode[], uiState: UIState, feedbackMap: FeedbackMap = new Map()): void {
-    const visibleItems = buildVisibleItems(roots, uiState, feedbackMap);
+  render(
+    roots: RootNode[],
+    uiState: UIState,
+    feedbackMap: FeedbackMap = new Map(),
+    shortLabelConfig?: ShortLabelConfig,
+  ): void {
+    const visibleItems = buildVisibleItems(roots, uiState, feedbackMap, shortLabelConfig);
 
     // Reconcile: reuse existing items where possible
     const newNodeIdToItem = new Map<NodeId, vscode.StatusBarItem>();

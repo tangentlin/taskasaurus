@@ -6,6 +6,7 @@ import { StatusBarRenderer } from "./statusBar";
 import { loadTasksJsonData } from "./iconLoader";
 import { logInfo, logTaskSource, logFilteringSummary } from "./logger";
 import { getConfig } from "./config";
+import type { ShortLabelConfig } from "./statusBarModel";
 
 const AUTO_COLLAPSE_TIMEOUT_MS = 10_000;
 const REFRESH_DEBOUNCE_MS = 250;
@@ -21,6 +22,7 @@ export class TaskasaurusController {
   private refreshTimer?: ReturnType<typeof setTimeout>;
   private readonly feedbackMap: FeedbackMap = new Map();
   private readonly disposables: vscode.Disposable[] = [];
+  private shortLabelConfig?: ShortLabelConfig;
 
   constructor() {
     this.renderer = new StatusBarRenderer();
@@ -116,6 +118,25 @@ export class TaskasaurusController {
     this.tasks = visibleTasks;
     this.roots = buildHierarchy(this.tasks, tasksJsonData.iconMap, config.groupDelimiter);
     disambiguateLabels(this.roots);
+
+    // Merge group overrides: settings.json first, then tasks.json overwrites
+    const mergedGroupOverrides = new Map<string, boolean>();
+    for (const [groupName, override] of config.groupOverrides) {
+      if (override.shortLabel !== undefined) {
+        mergedGroupOverrides.set(groupName, override.shortLabel);
+      }
+    }
+    for (const [groupName, override] of tasksJsonData.groupOverrides) {
+      if (override.shortLabel !== undefined) {
+        mergedGroupOverrides.set(groupName, override.shortLabel);
+      }
+    }
+    this.shortLabelConfig = {
+      globalDefault: config.shortChildLabels,
+      delimiter: config.groupDelimiter,
+      groupOverrides: mergedGroupOverrides,
+    };
+
     this.render();
   }
 
@@ -229,7 +250,7 @@ export class TaskasaurusController {
   }
 
   private render(): void {
-    this.renderer.render(this.roots, this.uiState, this.feedbackMap);
+    this.renderer.render(this.roots, this.uiState, this.feedbackMap, this.shortLabelConfig);
   }
 
   private startCollapseTimer(): void {

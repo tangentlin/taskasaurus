@@ -1,6 +1,12 @@
 import type { RootNode, ChildLeafNode, NodeId, UIState, TaskFeedback, TaskKey } from "./types";
 import { taskKeyToId } from "./taskKey";
 
+export type ShortLabelConfig = {
+  globalDefault: boolean;
+  delimiter: string;
+  groupOverrides: Map<string, boolean>;
+};
+
 export type FeedbackMap = Map<string, TaskFeedback>;
 
 export type VisibleItem = {
@@ -75,17 +81,40 @@ export function composeRootLeafLabel(
   return node.label;
 }
 
-export function composeChildLeafLabel(node: ChildLeafNode, feedback?: TaskFeedback): string {
+export function computeDisplayLabel(
+  childLabel: string,
+  parentLabel: string,
+  config: ShortLabelConfig | undefined,
+): string {
+  if (!config) return childLabel;
+
+  const shouldShorten = config.groupOverrides.get(parentLabel) ?? config.globalDefault;
+  if (!shouldShorten) return childLabel;
+
+  const prefix = parentLabel + config.delimiter;
+  if (childLabel.startsWith(prefix)) {
+    return childLabel.substring(prefix.length);
+  }
+
+  return childLabel;
+}
+
+export function composeChildLeafLabel(
+  node: ChildLeafNode,
+  feedback?: TaskFeedback,
+  displayLabel?: string,
+): string {
+  const label = displayLabel ?? node.label;
   const feedbackIcon = getFeedbackIcon(feedback);
 
   // Feedback icon replaces task icon but keeps child indicator
   if (feedbackIcon) {
-    return `$(arrow-small-right) ${feedbackIcon} ${node.label}`;
+    return `$(arrow-small-right) ${feedbackIcon} ${label}`;
   }
   if (node.iconId) {
-    return `$(arrow-small-right) $(${node.iconId}) ${node.label}`;
+    return `$(arrow-small-right) $(${node.iconId}) ${label}`;
   }
-  return `$(arrow-small-right) ${node.label}`;
+  return `$(arrow-small-right) ${label}`;
 }
 
 function composeParentTooltip(
@@ -130,6 +159,7 @@ export function buildVisibleItems(
   roots: RootNode[],
   uiState: UIState,
   feedbackMap: FeedbackMap = new Map(),
+  shortLabelConfig?: ShortLabelConfig,
 ): VisibleItem[] {
   const items: VisibleItem[] = [];
 
@@ -154,9 +184,10 @@ export function buildVisibleItems(
         for (let j = 0; j < node.children.length; j++) {
           const child = node.children[j];
           const childFeedback = getFeedbackForTaskKey(child.taskKey, feedbackMap);
+          const displayLabel = computeDisplayLabel(child.label, node.label, shortLabelConfig);
           items.push({
             nodeId: child.id,
-            label: composeChildLeafLabel(child, childFeedback),
+            label: composeChildLeafLabel(child, childFeedback, displayLabel),
             tooltip: composeLeafTooltip(
               child.label,
               child.taskKey.source,

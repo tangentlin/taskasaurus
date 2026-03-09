@@ -2,11 +2,13 @@ import { describe, it, expect } from "vitest";
 import {
   buildVisibleItems,
   computePriority,
+  computeDisplayLabel,
   composeParentLabel,
   composeRootLeafLabel,
   composeChildLeafLabel,
   COMMAND_ID,
   FeedbackMap,
+  ShortLabelConfig,
 } from "./statusBarModel";
 import type { RootNode, UIState } from "./types";
 
@@ -299,5 +301,228 @@ describe("buildVisibleItems with feedback", () => {
 
     expect(items[0].label).toBe("$(loading~spin) Build");
     expect(items[1].label).toBe("Test");
+  });
+});
+
+describe("computeDisplayLabel", () => {
+  const defaultConfig: ShortLabelConfig = {
+    globalDefault: true,
+    delimiter: "/",
+    groupOverrides: new Map(),
+  };
+
+  it("strips group prefix when enabled", () => {
+    expect(computeDisplayLabel("Test/unit", "Test", defaultConfig)).toBe("unit");
+  });
+
+  it("returns full label when disabled", () => {
+    const config: ShortLabelConfig = { ...defaultConfig, globalDefault: false };
+    expect(computeDisplayLabel("Test/unit", "Test", config)).toBe("Test/unit");
+  });
+
+  it("returns full label when config is undefined", () => {
+    expect(computeDisplayLabel("Test/unit", "Test", undefined)).toBe("Test/unit");
+  });
+
+  it("does not strip when child label has no prefix match", () => {
+    expect(computeDisplayLabel("Test", "Test", defaultConfig)).toBe("Test");
+  });
+
+  it("preserves disambiguation suffix after stripping", () => {
+    expect(computeDisplayLabel("Test/unit【api】", "Test", defaultConfig)).toBe("unit【api】");
+  });
+
+  it("handles multi-slash labels (strips only group prefix)", () => {
+    expect(computeDisplayLabel("Build/docker/prod", "Build", defaultConfig)).toBe("docker/prod");
+  });
+
+  it("respects per-group override to disable", () => {
+    const config: ShortLabelConfig = {
+      ...defaultConfig,
+      groupOverrides: new Map([["Test", false]]),
+    };
+    expect(computeDisplayLabel("Test/unit", "Test", config)).toBe("Test/unit");
+  });
+
+  it("respects per-group override to enable when global is off", () => {
+    const config: ShortLabelConfig = {
+      globalDefault: false,
+      delimiter: "/",
+      groupOverrides: new Map([["Test", true]]),
+    };
+    expect(computeDisplayLabel("Test/unit", "Test", config)).toBe("unit");
+  });
+
+  it("uses custom delimiter", () => {
+    const config: ShortLabelConfig = { ...defaultConfig, delimiter: ":" };
+    expect(computeDisplayLabel("Test:unit", "Test", config)).toBe("unit");
+  });
+});
+
+describe("composeChildLeafLabel with displayLabel", () => {
+  it("uses displayLabel when provided", () => {
+    const label = composeChildLeafLabel(
+      {
+        id: "test",
+        kind: "childLeaf",
+        label: "Test/unit",
+        taskKey: { label: "Test/unit", source: "Workspace" },
+      },
+      undefined,
+      "unit",
+    );
+    expect(label).toBe("$(arrow-small-right) unit");
+  });
+
+  it("uses displayLabel with icon", () => {
+    const label = composeChildLeafLabel(
+      {
+        id: "test",
+        kind: "childLeaf",
+        label: "Test/unit",
+        taskKey: { label: "Test/unit", source: "Workspace" },
+        iconId: "beaker",
+      },
+      undefined,
+      "unit",
+    );
+    expect(label).toBe("$(arrow-small-right) $(beaker) unit");
+  });
+
+  it("uses displayLabel with feedback icon", () => {
+    const label = composeChildLeafLabel(
+      {
+        id: "test",
+        kind: "childLeaf",
+        label: "Test/unit",
+        taskKey: { label: "Test/unit", source: "Workspace" },
+      },
+      { state: "running" },
+      "unit",
+    );
+    expect(label).toBe("$(arrow-small-right) $(loading~spin) unit");
+  });
+
+  it("falls back to node.label when displayLabel not provided", () => {
+    const label = composeChildLeafLabel({
+      id: "test",
+      kind: "childLeaf",
+      label: "Test/unit",
+      taskKey: { label: "Test/unit", source: "Workspace" },
+    });
+    expect(label).toBe("$(arrow-small-right) Test/unit");
+  });
+});
+
+describe("buildVisibleItems with shortLabelConfig", () => {
+  const createParent = (label: string, children: string[]): RootNode => ({
+    id: `parent::${label}`,
+    kind: "parent",
+    label,
+    children: children.map((c) => ({
+      id: `childLeaf::${c}`,
+      kind: "childLeaf",
+      label: c,
+      taskKey: { label: c, source: "Workspace" },
+    })),
+  });
+
+  const defaultConfig: ShortLabelConfig = {
+    globalDefault: true,
+    delimiter: "/",
+    groupOverrides: new Map(),
+  };
+
+  it("strips prefixes from child labels when enabled", () => {
+    const roots = [createParent("Test", ["Test/unit", "Test/e2e"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState, new Map(), defaultConfig);
+
+    expect(items[1].label).toBe("$(arrow-small-right) unit");
+    expect(items[2].label).toBe("$(arrow-small-right) e2e");
+  });
+
+  it("shows full labels when disabled", () => {
+    const config: ShortLabelConfig = { ...defaultConfig, globalDefault: false };
+    const roots = [createParent("Test", ["Test/unit", "Test/e2e"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState, new Map(), config);
+
+    expect(items[1].label).toBe("$(arrow-small-right) Test/unit");
+    expect(items[2].label).toBe("$(arrow-small-right) Test/e2e");
+  });
+
+  it("tooltips always use full labels regardless of shortLabelConfig", () => {
+    const roots = [createParent("Test", ["Test/unit", "Test/e2e"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState, new Map(), defaultConfig);
+
+    expect(items[1].tooltip).toBe("Run task 'Test/unit'\n(Workspace)");
+    expect(items[2].tooltip).toBe("Run task 'Test/e2e'\n(Workspace)");
+  });
+
+  it("per-group override disables stripping for one group", () => {
+    const config: ShortLabelConfig = {
+      ...defaultConfig,
+      groupOverrides: new Map([["Check", false]]),
+    };
+    const roots = [
+      createParent("Test", ["Test/unit", "Test/e2e"]),
+      createParent("Check", ["Check/lint", "Check/style"]),
+    ];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState, new Map(), config);
+
+    // Test group: short labels (global default on, no override)
+    expect(items[1].label).toBe("$(arrow-small-right) unit");
+    expect(items[2].label).toBe("$(arrow-small-right) e2e");
+
+    // Expand Check group instead
+    const uiState2: UIState = { expandedGroupId: "parent::Check" };
+    const items2 = buildVisibleItems(roots, uiState2, new Map(), config);
+
+    // Check group: full labels (override to false)
+    expect(items2[2].label).toBe("$(arrow-small-right) Check/lint");
+    expect(items2[3].label).toBe("$(arrow-small-right) Check/style");
+  });
+
+  it("preserves disambiguation suffix with short labels", () => {
+    const roots: RootNode[] = [
+      {
+        id: "parent::Test",
+        kind: "parent",
+        label: "Test",
+        children: [
+          {
+            id: "childLeaf::Test/unit【api】",
+            kind: "childLeaf",
+            label: "Test/unit【api】",
+            taskKey: { label: "Test/unit【api】", source: "Workspace", folder: "api" },
+          },
+        ],
+      },
+    ];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState, new Map(), defaultConfig);
+
+    expect(items[1].label).toBe("$(arrow-small-right) unit【api】");
+  });
+
+  it("shows full label when no config provided (backwards compat)", () => {
+    const roots = [createParent("Test", ["Test/unit", "Test/e2e"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items[1].label).toBe("$(arrow-small-right) Test/unit");
+    expect(items[2].label).toBe("$(arrow-small-right) Test/e2e");
+  });
+
+  it("short labels work with feedback icons", () => {
+    const roots = [createParent("Test", ["Test/unit"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const feedbackMap: FeedbackMap = new Map([["Test/unit::Workspace", { state: "running" }]]);
+    const items = buildVisibleItems(roots, uiState, feedbackMap, defaultConfig);
+
+    expect(items[1].label).toBe("$(arrow-small-right) $(loading~spin) unit");
   });
 });
