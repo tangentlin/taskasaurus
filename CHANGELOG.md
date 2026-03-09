@@ -4,6 +4,27 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.5.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.4.0...v1.5.0)
+
+### 🚀 Enhancements
+
+- Add short child labels with configurable per-group overrides ([#25](https://github.com/tangentlin/taskasaurus/pull/25))
+
+### 📖 Documentation
+
+- Update roadmap with prioritized feature backlog ([#24](https://github.com/tangentlin/taskasaurus/pull/24))
+
+### 🏡 Chore
+
+- Bump version to 1.4.0 ([3f53948](https://github.com/tangentlin/taskasaurus/commit/3f53948))
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+- Tangent Lin
+
 ## v1.4.0
 
 [compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.3.0...v1.4.0)
