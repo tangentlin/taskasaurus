@@ -42,6 +42,8 @@ export type UIState = {
   expandedGroupId?: NodeId;
   lastInteractionAt?: number;
   collapseTimer?: ReturnType<typeof setTimeout>;
+  revealedChildCount?: number;
+  expandAnimationTimers?: ReturnType<typeof setTimeout>[];
 };
 
 export type TaskFeedbackState = "running" | "success" | "error";
