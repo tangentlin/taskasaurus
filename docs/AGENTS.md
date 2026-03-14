@@ -45,7 +45,7 @@
 | Watch (dev)        | `pnpm run watch`        |
 | Run tests          | `pnpm test`             |
 | Lint               | `pnpm run check:lint`   |
-| Format check       | `pnpm run format:check` |
+| Format check       | `pnpm run check:style` |
 | Package VSIX       | `pnpm run package`      |
 | Generate changelog | `pnpm run changelog`    |
 

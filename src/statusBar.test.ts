@@ -526,3 +526,52 @@ describe("buildVisibleItems with shortLabelConfig", () => {
     expect(items[1].label).toBe("$(arrow-small-right) $(loading~spin) unit");
   });
 });
+
+describe("buildVisibleItems with revealedChildCount", () => {
+  const createParent = (label: string, children: string[]): RootNode => ({
+    id: `parent::${label}`,
+    kind: "parent",
+    label,
+    children: children.map((c) => ({
+      id: `childLeaf::${c}`,
+      kind: "childLeaf",
+      label: c,
+      taskKey: { label: c, source: "Workspace" },
+    })),
+  });
+
+  it("limits children to revealedChildCount", () => {
+    const roots = [createParent("Test", ["Test/a", "Test/b", "Test/c"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test", revealedChildCount: 1 };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items).toHaveLength(2); // parent + 1 child
+    expect(items[1].label).toBe("$(arrow-small-right) Test/a");
+  });
+
+  it("shows two children when revealedChildCount is 2", () => {
+    const roots = [createParent("Test", ["Test/a", "Test/b", "Test/c"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test", revealedChildCount: 2 };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items).toHaveLength(3); // parent + 2 children
+    expect(items[1].label).toBe("$(arrow-small-right) Test/a");
+    expect(items[2].label).toBe("$(arrow-small-right) Test/b");
+  });
+
+  it("shows all children when revealedChildCount is undefined", () => {
+    const roots = [createParent("Test", ["Test/a", "Test/b", "Test/c"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items).toHaveLength(4); // parent + 3 children
+  });
+
+  it("clamps to actual child count when revealedChildCount exceeds it", () => {
+    const roots = [createParent("Test", ["Test/a", "Test/b"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test", revealedChildCount: 10 };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items).toHaveLength(3); // parent + 2 children (all of them)
+  });
+});

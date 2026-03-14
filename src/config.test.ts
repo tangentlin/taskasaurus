@@ -113,6 +113,45 @@ describe("getConfig shortChildLabels", () => {
   });
 });
 
+describe("getConfig animateExpand", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("defaults to true when not configured", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => defaultValue),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.animateExpand).toBe(true);
+  });
+
+  it("reads false when configured", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => {
+        if (key === "animateExpand") return false;
+        return defaultValue;
+      }),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.animateExpand).toBe(false);
+  });
+
+  it("falls back to true for non-boolean value", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => {
+        if (key === "animateExpand") return "yes";
+        return defaultValue;
+      }),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.animateExpand).toBe(true);
+  });
+});
+
 describe("getConfig groupOverrides", () => {
   beforeEach(() => {
     vi.clearAllMocks();
