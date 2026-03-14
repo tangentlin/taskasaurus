@@ -98,6 +98,12 @@
             }
           }
         },
+        "taskasaurus.animateExpand": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate expansion of task groups with a stagger effect.",
+          "markdownDescription": "Animate expansion of task groups with a stagger effect.\n\nWhen enabled, children appear one at a time with a brief delay.\n\n**Default:** `true`"
+        },
         "taskasaurus.autoCollapseTimeout": {
           "type": "integer",
           "default": 10000,
