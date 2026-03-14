@@ -86,6 +86,7 @@ export class TaskasaurusController {
 
   async refresh(): Promise<void> {
     logInfo("Refreshing task list...");
+    this.cancelExpandAnimation();
 
     const config = getConfig();
 
