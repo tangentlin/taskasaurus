@@ -181,7 +181,9 @@ export function buildVisibleItems(
       });
 
       if (expanded) {
-        for (let j = 0; j < node.children.length; j++) {
+        const maxChildren = uiState.revealedChildCount ?? node.children.length;
+        const childCount = Math.min(maxChildren, node.children.length);
+        for (let j = 0; j < childCount; j++) {
           const child = node.children[j];
           const childFeedback = getFeedbackForTaskKey(child.taskKey, feedbackMap);
           const displayLabel = computeDisplayLabel(child.label, node.label, shortLabelConfig);

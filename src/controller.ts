@@ -11,6 +11,7 @@ import type { ShortLabelConfig } from "./statusBarModel";
 const AUTO_COLLAPSE_TIMEOUT_MS = 10_000;
 const REFRESH_DEBOUNCE_MS = 250;
 const FEEDBACK_DISPLAY_MS = 2_000;
+const EXPAND_STAGGER_MS = 60;
 
 export type FeedbackMap = Map<string, TaskFeedback>;
 
@@ -23,6 +24,7 @@ export class TaskasaurusController {
   private readonly feedbackMap: FeedbackMap = new Map();
   private readonly disposables: vscode.Disposable[] = [];
   private shortLabelConfig?: ShortLabelConfig;
+  private animateExpand = true;
 
   constructor() {
     this.renderer = new StatusBarRenderer();
@@ -136,6 +138,7 @@ export class TaskasaurusController {
       delimiter: config.groupDelimiter,
       groupOverrides: mergedGroupOverrides,
     };
+    this.animateExpand = config.animateExpand;
 
     this.render();
   }
@@ -172,12 +175,14 @@ export class TaskasaurusController {
   }
 
   collapse(): void {
+    this.cancelExpandAnimation();
     this.clearCollapseTimer();
     this.uiState.expandedGroupId = undefined;
     this.render();
   }
 
   dispose(): void {
+    this.cancelExpandAnimation();
     this.clearCollapseTimer();
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
@@ -199,6 +204,8 @@ export class TaskasaurusController {
   }
 
   private handleParentClick(nodeId: NodeId): void {
+    this.cancelExpandAnimation();
+
     if (this.uiState.expandedGroupId === nodeId) {
       // Toggle off - collapse
       this.uiState.expandedGroupId = undefined;
@@ -206,6 +213,7 @@ export class TaskasaurusController {
     } else {
       // Expand this group (accordion: only one open at a time)
       this.uiState.expandedGroupId = nodeId;
+      this.startExpandAnimation(nodeId);
       this.startCollapseTimer();
     }
     this.render();
@@ -213,6 +221,7 @@ export class TaskasaurusController {
 
   private handleLeafClick(taskKey: TaskKey): void {
     // Collapse all groups immediately
+    this.cancelExpandAnimation();
     this.uiState.expandedGroupId = undefined;
     this.clearCollapseTimer();
     this.render();
@@ -251,6 +260,46 @@ export class TaskasaurusController {
 
   private render(): void {
     this.renderer.render(this.roots, this.uiState, this.feedbackMap, this.shortLabelConfig);
+  }
+
+  private startExpandAnimation(nodeId: NodeId): void {
+    const node = this.lookupNode(nodeId);
+    if (!node || node.kind !== "parent") return;
+
+    const totalChildren = node.children.length;
+    if (totalChildren <= 1 || !this.animateExpand) {
+      this.uiState.revealedChildCount = undefined;
+      return;
+    }
+
+    this.uiState.revealedChildCount = 1;
+
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 2; i <= totalChildren; i++) {
+      const timer = setTimeout(
+        () => {
+          this.uiState.revealedChildCount = i;
+          if (i === totalChildren) {
+            this.uiState.revealedChildCount = undefined;
+            this.uiState.expandAnimationTimers = undefined;
+          }
+          this.render();
+        },
+        EXPAND_STAGGER_MS * (i - 1),
+      );
+      timers.push(timer);
+    }
+    this.uiState.expandAnimationTimers = timers;
+  }
+
+  private cancelExpandAnimation(): void {
+    if (this.uiState.expandAnimationTimers) {
+      for (const timer of this.uiState.expandAnimationTimers) {
+        clearTimeout(timer);
+      }
+      this.uiState.expandAnimationTimers = undefined;
+    }
+    this.uiState.revealedChildCount = undefined;
   }
 
   private startCollapseTimer(): void {
