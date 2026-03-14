@@ -4,6 +4,31 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.6.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.5.0...v1.6.0)
+
+### 🚀 Enhancements
+
+- Add staggered expand animation for task groups ([#28](https://github.com/tangentlin/taskasaurus/pull/28))
+
+### 🩹 Fixes
+
+- Validate shortLabel type and combine JSONC parse calls ([#26](https://github.com/tangentlin/taskasaurus/pull/26))
+
+### 📖 Documentation
+
+- Add comprehensive agent playbook and architecture documentation ([#27](https://github.com/tangentlin/taskasaurus/pull/27))
+
+### 🏡 Chore
+
+- Bump version to 1.5.0 ([cd27b9c](https://github.com/tangentlin/taskasaurus/commit/cd27b9c))
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+- Tangent Lin
+
 ## v1.5.0
 
 [compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.4.0...v1.5.0)
