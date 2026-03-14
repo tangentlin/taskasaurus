@@ -9,6 +9,7 @@ export type GroupOverride = {
 export interface TaskasaurusConfig {
   groupDelimiter: string;
   shortChildLabels: boolean;
+  animateExpand: boolean;
   groupOverrides: Map<string, GroupOverride>;
 }
 
@@ -30,6 +31,7 @@ export function getConfig(): TaskasaurusConfig {
   const config = vscode.workspace.getConfiguration("taskasaurus");
   const rawDelimiter = config.get<string>("groupDelimiter", DEFAULT_DELIMITER);
   const shortChildLabels = config.get<boolean>("shortChildLabels", true);
+  const animateExpand = config.get<boolean>("animateExpand", true);
   const rawGroups = config.get<Record<string, GroupOverride>>("groups", {});
 
   const groupOverrides = new Map<string, GroupOverride>();
@@ -45,6 +47,7 @@ export function getConfig(): TaskasaurusConfig {
   return {
     groupDelimiter: validateDelimiter(rawDelimiter),
     shortChildLabels: typeof shortChildLabels === "boolean" ? shortChildLabels : true,
+    animateExpand: typeof animateExpand === "boolean" ? animateExpand : true,
     groupOverrides,
   };
 }
