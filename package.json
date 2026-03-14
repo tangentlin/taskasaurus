@@ -29,7 +29,7 @@
     "watch": "pnpm run build --sourcemap --watch",
     "check:lint": "oxlint src",
     "check:style": "oxfmt .",
-    "format:check": "oxfmt --check .",
+    "check:all": "pnpm run check:lint && pnpm run check:style",
     "test": "vitest run",
     "package": "pnpm run build && vsce package --no-dependencies",
     "changelog": "changelogen --no-commit --no-tag"
@@ -97,6 +97,12 @@
               }
             }
           }
+        },
+        "taskasaurus.animateExpand": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate expansion of task groups with a stagger effect.",
+          "markdownDescription": "Animate expansion of task groups with a stagger effect.\n\nWhen enabled, children appear one at a time with a brief delay.\n\n**Default:** `true`"
         },
         "taskasaurus.autoCollapseTimeout": {
           "type": "integer",
