@@ -57,7 +57,7 @@ jobs:
         run: pnpm run check:lint
 
       - name: Check formatting
-        run: pnpm run format:check
+        run: pnpm run check:style
 
       - name: Run tests
         run: pnpm test
