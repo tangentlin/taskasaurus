@@ -33,21 +33,19 @@
 | Understand logging                | `modules/logger.md` → `src/logger.ts`                                              |
 | Understand design decisions       | `adr/*.md`                                                                         |
 | See the full product spec         | `functional-spec/PRODUCT.md`                                                       |
-| See the original spec             | `docs/specs.md`                                                                    |
-| See the implementation plan       | `docs/plan.md`                                                                     |
 | See the roadmap                   | `docs/ROADMAP.md`                                                                  |
 
 ## Build / Test / Run
 
-| Action             | Command                 |
-| ------------------ | ----------------------- |
-| Build              | `pnpm run build`        |
-| Watch (dev)        | `pnpm run watch`        |
-| Run tests          | `pnpm test`             |
-| Lint               | `pnpm run check:lint`   |
+| Action             | Command                |
+| ------------------ | ---------------------- |
+| Build              | `pnpm run build`       |
+| Watch (dev)        | `pnpm run watch`       |
+| Run tests          | `pnpm test`            |
+| Lint               | `pnpm run check:lint`  |
 | Format check       | `pnpm run check:style` |
-| Package VSIX       | `pnpm run package`      |
-| Generate changelog | `pnpm run changelog`    |
+| Package VSIX       | `pnpm run package`     |
+| Generate changelog | `pnpm run changelog`   |
 
 **Test runner:** Vitest (`vitest run`). Config at `vitest.config.ts`.
 **Bundler:** esbuild (single bundle to `dist/extension.js`).

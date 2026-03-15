@@ -216,15 +216,3 @@ Hide tasks based on context (branch, environment, etc.).
 **Why:**
 
 Reduces status bar clutter by hiding contextually irrelevant tasks.
-
----
-
-## Completed
-
-### ~~Configurable auto-collapse timeout~~
-
-Implemented in v0.x. Users can customize via `taskasaurus.autoCollapseTimeout` setting.
-
-### ~~Configurable group delimiter~~
-
-Implemented in v0.x. Users can change delimiter via `taskasaurus.groupDelimiter` setting.
