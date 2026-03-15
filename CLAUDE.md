@@ -16,13 +16,13 @@ an extra round of questions is better than a wrong assumption baked into code.
 
 ## Commands
 
-| Action       | Command               |
-| ------------ | --------------------- |
-| Build        | `pnpm run build`      |
-| Test         | `pnpm test`           |
-| Lint         | `pnpm run check:lint` |
-| Format check | `pnpm run check:style`|
-| All checks   | `pnpm run check:all`  |
+| Action       | Command                |
+| ------------ | ---------------------- |
+| Build        | `pnpm run build`       |
+| Test         | `pnpm test`            |
+| Lint         | `pnpm run check:lint`  |
+| Format check | `pnpm run check:style` |
+| All checks   | `pnpm run check:all`   |
 
 Always run `pnpm test` and `pnpm run check:lint` before considering a task done.
 

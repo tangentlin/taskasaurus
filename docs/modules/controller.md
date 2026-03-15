@@ -55,12 +55,12 @@ sequenceDiagram
 
 ## Key Types
 
-| Type               | Location                | Description                                                |
-| ------------------ | ----------------------- | ---------------------------------------------------------- |
-| `FeedbackMap`      | `src/controller.ts`     | `Map<string, TaskFeedback>`                                |
-| `UIState`          | `src/types.ts`          | `{ expandedGroupId?, lastInteractionAt?, collapseTimer? }` |
-| `TaskFeedback`     | `src/types.ts`          | `{ state: "running" \| "success" \| "error", timer? }`     |
-| `ShortLabelConfig` | `src/statusBarModel.ts` | `{ globalDefault, delimiter, groupOverrides }`             |
+| Type               | Location                | Description                                                                                             |
+| ------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| `FeedbackMap`      | `src/controller.ts`     | `Map<string, TaskFeedback>`                                                                             |
+| `UIState`          | `src/types.ts`          | `{ expandedGroupId?, lastInteractionAt?, collapseTimer?, revealedChildCount?, expandAnimationTimers? }` |
+| `TaskFeedback`     | `src/types.ts`          | `{ state: "running" \| "success" \| "error", timer? }`                                                  |
+| `ShortLabelConfig` | `src/statusBarModel.ts` | `{ globalDefault, delimiter, groupOverrides }`                                                          |
 
 ## Constants
 
@@ -69,6 +69,7 @@ sequenceDiagram
 | `AUTO_COLLAPSE_TIMEOUT_MS` | `10_000` | `src/controller.ts` |
 | `REFRESH_DEBOUNCE_MS`      | `250`    | `src/controller.ts` |
 | `FEEDBACK_DISPLAY_MS`      | `2_000`  | `src/controller.ts` |
+| `EXPAND_STAGGER_MS`        | `60`     | `src/controller.ts` |
 
 ## Invariants and Failure Modes
 
@@ -82,6 +83,7 @@ sequenceDiagram
 
 - Auto-collapse timeout is configurable via `taskasaurus.autoCollapseTimeout` setting (read in `startCollapseTimer()`).
 - Group delimiter and short-label behavior are configurable via `getConfig()` (`src/config.ts`).
+- Expand animation is configurable via `taskasaurus.animateExpand` (read via `getConfig()`). When enabled, children are revealed one at a time with a `EXPAND_STAGGER_MS` delay between each. Managed by `startExpandAnimation()` and `cancelExpandAnimation()`.
 
 ## Related Files
 

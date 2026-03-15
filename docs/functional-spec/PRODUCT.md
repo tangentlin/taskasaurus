@@ -99,6 +99,7 @@ Only tasks defined in `.vscode/tasks.json` are shown. Auto-detected tasks from t
 | `taskasaurus.groupDelimiter`      | `string`  | `"/"`   | Delimiter for deriving groups from task labels.                          |
 | `taskasaurus.autoCollapseTimeout` | `number`  | `10000` | Milliseconds before auto-collapse. `0` disables.                         |
 | `taskasaurus.shortChildLabels`    | `boolean` | `true`  | Strip group prefix from child labels when expanded.                      |
+| `taskasaurus.animateExpand`       | `boolean` | `true`  | Animate group expansion with a stagger effect.                           |
 | `taskasaurus.groups`              | `object`  | `{}`    | Per-group overrides keyed by group name. Supports `shortLabel: boolean`. |
 
 Additionally, per-group overrides can be specified in `tasks.json` under a `taskasaurus` top-level key, following the same schema as `taskasaurus.groups` in settings.
@@ -160,7 +161,7 @@ Additionally, per-group overrides can be specified in `tasks.json` under a `task
 
 ## Sorting
 
-- Root items (parents and root leaves): alphabetical by display label, case-insensitive. Stable tie-break by original fetch order.
+- Root items (parents and root leaves): alphabetical by display label, case-insensitive. Stable tie-break by case-sensitive comparison.
 - Group children: alphabetical by full task label.
 
 ## Error States

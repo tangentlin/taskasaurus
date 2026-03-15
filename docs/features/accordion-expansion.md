@@ -15,6 +15,10 @@ As a developer browsing my task groups, I want clicking a group to expand it in-
 
 Out of scope: multi-group expansion, keyboard navigation, pinning groups open.
 
+### Expand Animation
+
+When `taskasaurus.animateExpand` is enabled (default `true`), children are revealed one at a time with a 60ms stagger delay between each. Groups with only one child skip the animation. Setting `animateExpand` to `false` reveals all children instantly.
+
 ## UX Flow
 
 ### State: All Collapsed (default)
@@ -56,10 +60,12 @@ A single parent shows `$(chevron-down)` and its children are inserted directly a
 
 ## Code Touchpoints
 
-| File                | Symbol               | Role                                                                                                                                   |
-| ------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/controller.ts` | `handleParentClick`  | Determines expand/collapse transition based on current `UIState.expandedGroupId`. Calls render after state change.                     |
-| `src/controller.ts` | `startCollapseTimer` | Starts or resets the auto-collapse `setTimeout`. Reads timeout value from config. Clears any existing timer before starting a new one. |
+| File                | Symbol                  | Role                                                                        |
+| ------------------- | ----------------------- | --------------------------------------------------------------------------- |
+| `src/controller.ts` | `handleParentClick`     | Accordion toggle based on `UIState.expandedGroupId`. Calls render after.    |
+| `src/controller.ts` | `startCollapseTimer`    | Starts/resets auto-collapse `setTimeout`. Reads timeout from config.        |
+| `src/controller.ts` | `startExpandAnimation`  | Staggers child reveal when `animateExpand` is on. Uses `EXPAND_STAGGER_MS`. |
+| `src/controller.ts` | `cancelExpandAnimation` | Cancels in-progress expand animation; clears `UIState.revealedChildCount`.  |
 
 ## Known Pitfalls
 
