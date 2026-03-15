@@ -30,7 +30,6 @@ const hashRefRegex = /\[[a-f0-9]{7,}\]/;
 // Entries matching these patterns are noise from the release workflow
 const stripPatterns = [/^bump version to /i];
 
-
 function processSection(header, lines) {
   if (!header) return lines;
 

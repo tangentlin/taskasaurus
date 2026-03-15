@@ -42,9 +42,10 @@
 
 ## Other Reference
 
-| Document                       | Description                         |
-| ------------------------------ | ----------------------------------- |
-| [specs.md](./specs.md)         | Original product specification      |
-| [plan.md](./plan.md)           | Implementation plan with milestones |
-| [ROADMAP.md](./ROADMAP.md)     | Future features under consideration |
-| [releasing.md](./releasing.md) | Release process                     |
+| Document                               | Description                                 |
+| -------------------------------------- | ------------------------------------------- |
+| [specs.md](./specs.md)                 | Original product specification (historical) |
+| [ROADMAP.md](./ROADMAP.md)             | Future features under consideration         |
+| [releasing.md](./releasing.md)         | Release process                             |
+| [README.md](../README.md)              | Project readme and usage guide              |
+| [THIRDPARTY.md](../THIRDPARTY.md)      | Third-party license attributions            |
