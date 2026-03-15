@@ -44,7 +44,5 @@
 
 | Document                       | Description                         |
 | ------------------------------ | ----------------------------------- |
-| [specs.md](./specs.md)         | Original product specification      |
-| [plan.md](./plan.md)           | Implementation plan with milestones |
 | [ROADMAP.md](./ROADMAP.md)     | Future features under consideration |
 | [releasing.md](./releasing.md) | Release process                     |

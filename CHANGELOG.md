@@ -22,7 +22,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
@@ -41,7 +40,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
@@ -59,7 +57,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 - Remove completed delimiter config from roadmap ([#21](https://github.com/tangentlin/taskasaurus/pull/21))
 
 ### 🏡 Chore
-
 
 ### 🤖 CI
 
@@ -98,7 +95,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 - Improve changelog generation with deduplication and proper formatting ([#18](https://github.com/tangentlin/taskasaurus/pull/18))
 
 ### 🏡 Chore
-
 
 ### ❤️ Contributors
 
