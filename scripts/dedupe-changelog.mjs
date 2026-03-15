@@ -27,9 +27,9 @@ const entryRegex = /^- (.+?)(?:\s*\((\[#\d+\]|\[[a-f0-9]+\])\([^)]+\)\))?$/;
 const prRefRegex = /\[#\d+\]/;
 const hashRefRegex = /\[[a-f0-9]{7,}\]/;
 
-// Regex to match contributor lines like:
-// - Name <email> or - Name
-const contributorRegex = /^- .+$/;
+// Entries matching these patterns are noise from the release workflow
+const stripPatterns = [/^bump version to /i];
+
 
 function processSection(header, lines) {
   if (!header) return lines;
@@ -38,30 +38,27 @@ function processSection(header, lines) {
   const isContributorSection = /contributors/i.test(header);
 
   if (isContributorSection) {
-    // Dedupe contributors by name (case-insensitive, ignoring email variations)
-    const seen = new Map();
-    const deduped = [];
+    // Keep only contributors that have an email address.
+    // GitHub merge-commit authors (e.g. "Tangent Lin") appear without an email,
+    // while the original commit author (e.g. "Tianzhen Lin (Tangent) <email>")
+    // includes one. Keeping only email entries removes the duplicate.
+    const withEmail = [];
+    const withoutEmail = [];
 
     for (const line of lines) {
       if (!line.startsWith("- ")) {
-        deduped.push(line);
+        withEmail.push(line);
         continue;
       }
-
-      // Extract contributor name (before any email or parenthetical)
-      const nameMatch = line.match(/^- ([^<(]+)/);
-      if (nameMatch) {
-        const name = nameMatch[1].trim().toLowerCase();
-        if (!seen.has(name)) {
-          seen.set(name, line);
-          deduped.push(line);
-        }
+      if (/<.+>/.test(line)) {
+        withEmail.push(line);
       } else {
-        deduped.push(line);
+        withoutEmail.push(line);
       }
     }
 
-    return deduped;
+    // Fall back to all entries if none have emails (shouldn't happen normally)
+    return withEmail.some((l) => l.startsWith("- ")) ? withEmail : lines;
   }
 
   // For changelog sections, dedupe by description text
@@ -72,6 +69,11 @@ function processSection(header, lines) {
   for (const line of lines) {
     if (!line.startsWith("- ")) {
       otherLines.push(line);
+      continue;
+    }
+
+    // Strip release-workflow noise (e.g. "- Bump version to 1.5.0")
+    if (stripPatterns.some((re) => re.test(line.slice(2)))) {
       continue;
     }
 
