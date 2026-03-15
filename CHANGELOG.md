@@ -22,12 +22,10 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-- Bump version to 1.5.0 ([cd27b9c](https://github.com/tangentlin/taskasaurus/commit/cd27b9c))
 
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
-- Tangent Lin
 
 ## v1.5.0
 
@@ -43,12 +41,10 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-- Bump version to 1.4.0 ([3f53948](https://github.com/tangentlin/taskasaurus/commit/3f53948))
 
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
-- Tangent Lin
 
 ## v1.4.0
 
@@ -64,7 +60,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-- Bump version to 1.3.0 ([40212d0](https://github.com/tangentlin/taskasaurus/commit/40212d0))
 
 ### 🤖 CI
 
@@ -73,7 +68,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 ### ❤️ Contributors
 
 - Tianzhen Lin (Tangent) <tangent@usa.net>
-- Tangent Lin
 
 ## v1.3.0
 
@@ -85,7 +79,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-- Bump version to 1.2.0 ([27d1341](https://github.com/tangentlin/taskasaurus/commit/27d1341))
 - Add Git support to PR command with smart diff detection ([#19](https://github.com/tangentlin/taskasaurus/pull/19))
 
 ### ❤️ Contributors
@@ -106,7 +99,6 @@ This changelog is automatically generated from [Conventional Commits](https://ww
 
 ### 🏡 Chore
 
-- Bump version to 1.1.3 ([65b7b9d](https://github.com/tangentlin/taskasaurus/commit/65b7b9d))
 
 ### ❤️ Contributors
 
