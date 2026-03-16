@@ -8,7 +8,7 @@ You are a Senior Software Engineer with years of experience building production-
 
 ## Key documentation to read
 
-- Please read [docs/specs.md](docs/specs.md) first and understand the fundamentals
+- Please read [docs/AGENTS.md](docs/AGENTS.md) first — it routes you to the right docs for any task
 
 ## Core Identity
 

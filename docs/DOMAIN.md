@@ -2,27 +2,27 @@
 
 ## Glossary
 
-| Term                  | Definition                                                                                                                                                              |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Task**              | A VS Code workspace task defined in `.vscode/tasks.json`. Auto-detected tasks from providers (npm, TypeScript, etc.) are excluded.                                      |
-| **TaskKey**           | The identity tuple `(label, source, folder?, definitionType?, detail?)` that uniquely identifies a task across workspace folders.                                       |
-| **Node**              | A renderable unit in the status bar. Every visible element -- root leaf, parent group, or child leaf -- is a Node.                                                      |
-| **RootLeafNode**      | A top-level task with no group. Clicking it executes the task.                                                                                                          |
-| **ParentNode**        | A virtual group header created when 2+ tasks share a group prefix. Clicking it toggles expand/collapse. Not directly runnable unless `runnableTaskKey` is set.          |
-| **ChildLeafNode**     | A task nested under a ParentNode, visible only when the parent is expanded. Clicking it executes the task.                                                              |
-| **RootNode**          | Union of `RootLeafNode \| ParentNode` -- anything that appears at the top level.                                                                                        |
-| **NodeId**            | A deterministic string identifier for a node, derived from its kind and TaskKey (or group name for parents). Format: `kind::label::source[::folder][::definitionType]`. |
-| **Group**             | A virtual container derived from a shared label prefix. Groups have no corresponding VS Code task unless a task label exactly matches the group name.                   |
-| **Delimiter**         | The character used to split task labels into group/name pairs. Default: `/`. Configurable via `taskasaurus.groupDelimiter`.                                             |
-| **IconMap**           | `Map<string, string>` mapping task labels to codicon IDs, extracted from `tasks.json` icon definitions.                                                                 |
-| **UIState**           | In-memory state tracking which group is expanded, the timestamp of the last interaction, and the auto-collapse timer handle.                                            |
-| **TaskFeedback**      | Per-task execution state: `running`, `success`, or `error`. Each entry holds an optional timer for auto-clearing after 2 seconds.                                       |
-| **FeedbackMap**       | `Map<string, TaskFeedback>` keyed by `taskKeyToId(taskKey)`. Tracks all active feedback indicators.                                                                     |
-| **VisibleItem**       | A computed rendering instruction for a single StatusBarItem: label text, tooltip, priority number, and command arguments.                                               |
-| **ShortLabelConfig**  | Configuration controlling whether child labels strip the group prefix. Composed from global default, delimiter, and per-group overrides.                                |
-| **TasksJsonMetadata** | Aggregated metadata from all workspace folder `tasks.json` files: icon map, hidden labels, defined labels, and group overrides.                                         |
-| **Accordion**         | The interaction model where at most one group is expanded at any time. Expanding a group collapses any previously expanded group.                                       |
-| **Auto-collapse**     | A timer-based behavior that collapses the expanded group after a configurable timeout (default 10 seconds) of inactivity.                                               |
+| Term                  | Definition                                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Task**              | A VS Code workspace task defined in `.vscode/tasks.json`. Auto-detected tasks from providers (npm, TypeScript, etc.) are excluded.                                             |
+| **TaskKey**           | The identity tuple `(label, source, folder?, definitionType?, detail?)` that uniquely identifies a task across workspace folders.                                              |
+| **Node**              | A renderable unit in the status bar. Every visible element -- root leaf, parent group, or child leaf -- is a Node.                                                             |
+| **RootLeafNode**      | A top-level task with no group. Clicking it executes the task.                                                                                                                 |
+| **ParentNode**        | A virtual group header created when 2+ tasks share a group prefix. Clicking it toggles expand/collapse. Not directly runnable unless `runnableTaskKey` is set.                 |
+| **ChildLeafNode**     | A task nested under a ParentNode, visible only when the parent is expanded. Clicking it executes the task.                                                                     |
+| **RootNode**          | Union of `RootLeafNode \| ParentNode` -- anything that appears at the top level.                                                                                               |
+| **NodeId**            | A deterministic string identifier for a node, derived from its kind and TaskKey (or group name for parents). Format: `kind::label::source[::folder][::definitionType]`.        |
+| **Group**             | A virtual container derived from a shared label prefix. Groups have no corresponding VS Code task unless a task label exactly matches the group name.                          |
+| **Delimiter**         | The character used to split task labels into group/name pairs. Default: `/`. Configurable via `taskasaurus.groupDelimiter`.                                                    |
+| **IconMap**           | `Map<string, string>` mapping task labels to codicon IDs, extracted from `tasks.json` icon definitions.                                                                        |
+| **UIState**           | In-memory state tracking which group is expanded, last interaction timestamp, auto-collapse timer, and expand animation state (`revealedChildCount`, `expandAnimationTimers`). |
+| **TaskFeedback**      | Per-task execution state: `running`, `success`, or `error`. Each entry holds an optional timer for auto-clearing after 2 seconds.                                              |
+| **FeedbackMap**       | `Map<string, TaskFeedback>` keyed by `taskKeyToId(taskKey)`. Tracks all active feedback indicators.                                                                            |
+| **VisibleItem**       | A computed rendering instruction for a single StatusBarItem: label text, tooltip, priority number, and command arguments.                                                      |
+| **ShortLabelConfig**  | Configuration controlling whether child labels strip the group prefix. Composed from global default, delimiter, and per-group overrides.                                       |
+| **TasksJsonMetadata** | Aggregated metadata from all workspace folder `tasks.json` files: icon map, hidden labels, defined labels, and group overrides.                                                |
+| **Accordion**         | The interaction model where at most one group is expanded at any time. Expanding a group collapses any previously expanded group.                                              |
+| **Auto-collapse**     | A timer-based behavior that collapses the expanded group after a configurable timeout (default 10 seconds) of inactivity.                                                      |
 
 ## Entity Relationships
 
@@ -61,6 +61,8 @@ erDiagram
         NodeId expandedGroupId
         number lastInteractionAt
         timeout collapseTimer
+        number revealedChildCount
+        timeout[] expandAnimationTimers
     }
 
     FeedbackMap {

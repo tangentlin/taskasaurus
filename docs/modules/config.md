@@ -32,15 +32,16 @@ Reads and validates Taskasaurus settings from VS Code workspace configuration.
 | --------------------------------- | ------- | ------- | ---------------------------------------------------------- |
 | `taskasaurus.groupDelimiter`      | string  | `"/"`   | Must be exactly 1 character; falls back to `"/"`           |
 | `taskasaurus.shortChildLabels`    | boolean | `true`  | Falls back to `true` if not a boolean                      |
+| `taskasaurus.animateExpand`       | boolean | `true`  | Falls back to `true` if not a boolean                      |
 | `taskasaurus.groups`              | object  | `{}`    | Keyed by group name; each value `{ shortLabel?: boolean }` |
 | `taskasaurus.autoCollapseTimeout` | integer | `10000` | Read directly in controller, not via `getConfig()`         |
 
 ## Key Types
 
-| Type                | Location        | Description                                                                                         |
-| ------------------- | --------------- | --------------------------------------------------------------------------------------------------- |
-| `TaskasaurusConfig` | `src/config.ts` | `{ groupDelimiter: string, shortChildLabels: boolean, groupOverrides: Map<string, GroupOverride> }` |
-| `GroupOverride`     | `src/config.ts` | `{ shortLabel?: boolean }`                                                                          |
+| Type                | Location        | Description                                                                                                                 |
+| ------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `TaskasaurusConfig` | `src/config.ts` | `{ groupDelimiter: string, shortChildLabels: boolean, animateExpand: boolean, groupOverrides: Map<string, GroupOverride> }` |
+| `GroupOverride`     | `src/config.ts` | `{ shortLabel?: boolean }`                                                                                                  |
 
 ## Invariants and Failure Modes
 
