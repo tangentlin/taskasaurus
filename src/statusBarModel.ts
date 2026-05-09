@@ -15,6 +15,7 @@ export type VisibleItem = {
   tooltip: string;
   priority: number;
   commandArgs: { nodeId: string };
+  tinted?: boolean;
 };
 
 const COMMAND_ID = "taskasaurus.clickNode";
@@ -103,18 +104,20 @@ export function composeChildLeafLabel(
   node: ChildLeafNode,
   feedback?: TaskFeedback,
   displayLabel?: string,
+  showIndicator: boolean = true,
 ): string {
   const label = displayLabel ?? node.label;
   const feedbackIcon = getFeedbackIcon(feedback);
+  const prefix = showIndicator ? "$(arrow-small-right) " : "";
 
   // Feedback icon replaces task icon but keeps child indicator
   if (feedbackIcon) {
-    return `$(arrow-small-right) ${feedbackIcon} ${label}`;
+    return `${prefix}${feedbackIcon} ${label}`;
   }
   if (node.iconId) {
-    return `$(arrow-small-right) $(${node.iconId}) ${label}`;
+    return `${prefix}$(${node.iconId}) ${label}`;
   }
-  return `$(arrow-small-right) ${label}`;
+  return prefix ? `${prefix}${label}` : label;
 }
 
 function composeParentTooltip(
@@ -160,6 +163,7 @@ export function buildVisibleItems(
   uiState: UIState,
   feedbackMap: FeedbackMap = new Map(),
   shortLabelConfig?: ShortLabelConfig,
+  showChildIndicator: boolean = true,
 ): VisibleItem[] {
   const items: VisibleItem[] = [];
 
@@ -189,7 +193,7 @@ export function buildVisibleItems(
           const displayLabel = computeDisplayLabel(child.label, node.label, shortLabelConfig);
           items.push({
             nodeId: child.id,
-            label: composeChildLeafLabel(child, childFeedback, displayLabel),
+            label: composeChildLeafLabel(child, childFeedback, displayLabel, showChildIndicator),
             tooltip: composeLeafTooltip(
               child.label,
               child.taskKey.source,
@@ -198,6 +202,21 @@ export function buildVisibleItems(
             ),
             priority: computePriority(i, j),
             commandArgs: { nodeId: child.id },
+            tinted: true,
+          });
+        }
+        if (childCount > 0) {
+          // Divider sits between the last child and the next root item, marking the
+          // visual boundary of the expanded group. Clicking it toggles the parent
+          // (reuses the parent's click handler via commandArgs). Untinted so the
+          // bright vertical bar reads as a sharp boundary against the dim children.
+          const lastChildPriority = computePriority(i, childCount - 1);
+          items.push({
+            nodeId: `divider::${node.id}`,
+            label: "│",
+            tooltip: `End of '${node.label}'`,
+            priority: lastChildPriority - 1,
+            commandArgs: { nodeId: node.id },
           });
         }
       }

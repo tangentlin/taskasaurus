@@ -134,15 +134,97 @@ describe("buildVisibleItems", () => {
     expect(items[0].label).toBe("Test $(chevron-right)");
   });
 
-  it("renders expanded parent with children", () => {
+  it("renders expanded parent with children plus a trailing divider", () => {
     const roots = [createParent("Test", ["Test: unit", "Test: e2e"])];
     const uiState: UIState = { expandedGroupId: "parent::Test" };
     const items = buildVisibleItems(roots, uiState);
 
-    expect(items).toHaveLength(3);
+    expect(items).toHaveLength(4);
     expect(items[0].label).toBe("Test $(chevron-down)");
     expect(items[1].label).toBe("$(arrow-small-right) Test: unit");
     expect(items[2].label).toBe("$(arrow-small-right) Test: e2e");
+    expect(items[3].label).toBe("│");
+    expect(items[3].nodeId).toBe("divider::parent::Test");
+  });
+
+  it("tints expanded children but leaves parent, divider, and root leaves untinted", () => {
+    const roots = [createParent("Test", ["Test: unit", "Test: e2e"]), createRootLeaf("Build")];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items[0].tinted).toBeUndefined(); // parent
+    expect(items[1].tinted).toBe(true); // child
+    expect(items[2].tinted).toBe(true); // child
+    expect(items[3].tinted).toBeUndefined(); // divider — bright so it reads as a boundary
+    expect(items[4].tinted).toBeUndefined(); // root leaf after group
+  });
+
+  it("emits a trailing divider for a single-child group", () => {
+    const roots = [createParent("Test", ["Test: only"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState);
+
+    expect(items).toHaveLength(3);
+    expect(items[1].label).toBe("$(arrow-small-right) Test: only");
+    expect(items[2].label).toBe("│");
+    expect(items[2].nodeId).toBe("divider::parent::Test");
+  });
+
+  it("divider click targets parent so it acts as a collapse handle", () => {
+    const roots = [createParent("Test", ["Test: unit"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState);
+
+    const divider = items[items.length - 1];
+    expect(divider.commandArgs).toEqual({ nodeId: "parent::Test" });
+    expect(divider.tooltip).toBe("End of 'Test'");
+  });
+
+  it("places divider between last child and next root in priority order", () => {
+    const roots = [createParent("Beta", ["Beta: one", "Beta: two"]), createRootLeaf("Gamma")];
+    const uiState: UIState = { expandedGroupId: "parent::Beta" };
+    const items = buildVisibleItems(roots, uiState);
+
+    // Beta(10000) > Beta:one(9950) > Beta:two(9949) > divider(9948) > Gamma(9900)
+    expect(items.map((i) => i.priority)).toEqual([10000, 9950, 9949, 9948, 9900]);
+  });
+
+  it("omits the leading arrow on children when showChildIndicator is false", () => {
+    const roots = [createParent("Test", ["Test: unit", "Test: e2e"])];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const items = buildVisibleItems(roots, uiState, new Map(), undefined, false);
+
+    expect(items[1].label).toBe("Test: unit");
+    expect(items[2].label).toBe("Test: e2e");
+    // Divider is independent of the indicator setting
+    expect(items[3].label).toBe("│");
+  });
+
+  it("preserves task and feedback icons on children when indicator is hidden", () => {
+    const roots: RootNode[] = [
+      {
+        id: "parent::Test",
+        kind: "parent",
+        label: "Test",
+        children: [
+          {
+            id: "childLeaf::Test: unit",
+            kind: "childLeaf",
+            label: "Test: unit",
+            taskKey: { label: "Test: unit", source: "Workspace" },
+            iconId: "beaker",
+          },
+        ],
+      },
+    ];
+    const uiState: UIState = { expandedGroupId: "parent::Test" };
+    const feedbackMap: FeedbackMap = new Map([
+      ["Test: unit::Workspace", { state: "running" }],
+    ]);
+    const items = buildVisibleItems(roots, uiState, feedbackMap, undefined, false);
+
+    // Feedback icon still wins over task icon, just no leading arrow
+    expect(items[1].label).toBe("$(loading~spin) Test: unit");
   });
 
   it("maintains correct priority ordering", () => {
@@ -154,8 +236,8 @@ describe("buildVisibleItems", () => {
     const uiState: UIState = { expandedGroupId: "parent::Beta" };
     const items = buildVisibleItems(roots, uiState);
 
-    // Alpha (10000) > Beta (9900) > Beta:one (9850) > Beta:two (9849) > Gamma (9800)
-    expect(items.map((i) => i.priority)).toEqual([10000, 9900, 9850, 9849, 9800]);
+    // Alpha (10000) > Beta (9900) > Beta:one (9850) > Beta:two (9849) > divider (9848) > Gamma (9800)
+    expect(items.map((i) => i.priority)).toEqual([10000, 9900, 9850, 9849, 9848, 9800]);
   });
 
   it("includes correct tooltips", () => {
@@ -540,23 +622,26 @@ describe("buildVisibleItems with revealedChildCount", () => {
     })),
   });
 
-  it("limits children to revealedChildCount", () => {
+  it("limits children to revealedChildCount and trails the divider", () => {
     const roots = [createParent("Test", ["Test/a", "Test/b", "Test/c"])];
     const uiState: UIState = { expandedGroupId: "parent::Test", revealedChildCount: 1 };
     const items = buildVisibleItems(roots, uiState);
 
-    expect(items).toHaveLength(2); // parent + 1 child
+    expect(items).toHaveLength(3); // parent + 1 child + divider
     expect(items[1].label).toBe("$(arrow-small-right) Test/a");
+    expect(items[2].label).toBe("│");
+    expect(items[2].nodeId).toBe("divider::parent::Test");
   });
 
-  it("shows two children when revealedChildCount is 2", () => {
+  it("shows two children plus divider when revealedChildCount is 2", () => {
     const roots = [createParent("Test", ["Test/a", "Test/b", "Test/c"])];
     const uiState: UIState = { expandedGroupId: "parent::Test", revealedChildCount: 2 };
     const items = buildVisibleItems(roots, uiState);
 
-    expect(items).toHaveLength(3); // parent + 2 children
+    expect(items).toHaveLength(4); // parent + 2 children + divider
     expect(items[1].label).toBe("$(arrow-small-right) Test/a");
     expect(items[2].label).toBe("$(arrow-small-right) Test/b");
+    expect(items[3].label).toBe("│");
   });
 
   it("shows all children when revealedChildCount is undefined", () => {
@@ -564,7 +649,7 @@ describe("buildVisibleItems with revealedChildCount", () => {
     const uiState: UIState = { expandedGroupId: "parent::Test" };
     const items = buildVisibleItems(roots, uiState);
 
-    expect(items).toHaveLength(4); // parent + 3 children
+    expect(items).toHaveLength(5); // parent + 3 children + divider
   });
 
   it("clamps to actual child count when revealedChildCount exceeds it", () => {
@@ -572,6 +657,6 @@ describe("buildVisibleItems with revealedChildCount", () => {
     const uiState: UIState = { expandedGroupId: "parent::Test", revealedChildCount: 10 };
     const items = buildVisibleItems(roots, uiState);
 
-    expect(items).toHaveLength(3); // parent + 2 children (all of them)
+    expect(items).toHaveLength(4); // parent + 2 children + divider
   });
 });
