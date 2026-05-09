@@ -29,6 +29,14 @@ Status bar shows only root-level items (parents with `$(chevron-right)` and root
 
 A single parent shows `$(chevron-down)` and its children are inserted directly after it in the status bar. All other parents remain collapsed.
 
+### Sub-list Boundary Cues
+
+To make the start and end of an expanded sub-list obvious without adding intrusive widgets, the rendered group carries two subtle visual cues:
+
+- **Tinted children.** Every expanded child is rendered with the `disabledForeground` theme color, producing a softer/dimmer tone vs. the default status bar foreground (themes reliably set `disabledForeground` to a contrasting muted value). Parent, root-leaf, and divider items keep the default (bright) color, so the group reads as a tinted band sandwiched between normally-colored neighbors.
+- **Trailing divider item.** A standalone `│` item is emitted immediately after the last revealed child, sitting in the priority gap between that child and the next root. The bright vertical bar against the dim children punctuates the boundary between the sub-list and the next root item. The divider's click target is the parent's nodeId, so clicking it collapses the group (a free affordance via the existing parent click handler). Its tooltip reads `End of 'GroupName'`. During the expand stagger, the divider trails the currently-last-visible child.
+- **Optional leading arrow on children.** By default each expanded child is prefixed with `$(arrow-small-right)` to reinforce its child status. Users who find this visually noisy can set `taskasaurus.showChildIndicator` to `false` — the muted text color and trailing divider still distinguish children from root items, so the structure remains legible without the per-row arrow.
+
 ### Transitions
 
 | Current State | Action         | Next State                    |

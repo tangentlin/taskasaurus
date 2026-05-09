@@ -25,6 +25,7 @@ export class TaskasaurusController {
   private readonly disposables: vscode.Disposable[] = [];
   private shortLabelConfig?: ShortLabelConfig;
   private animateExpand = true;
+  private showChildIndicator = true;
 
   constructor() {
     this.renderer = new StatusBarRenderer();
@@ -140,6 +141,7 @@ export class TaskasaurusController {
       groupOverrides: mergedGroupOverrides,
     };
     this.animateExpand = config.animateExpand;
+    this.showChildIndicator = config.showChildIndicator;
 
     this.render();
   }
@@ -260,7 +262,13 @@ export class TaskasaurusController {
   }
 
   private render(): void {
-    this.renderer.render(this.roots, this.uiState, this.feedbackMap, this.shortLabelConfig);
+    this.renderer.render(
+      this.roots,
+      this.uiState,
+      this.feedbackMap,
+      this.shortLabelConfig,
+      this.showChildIndicator,
+    );
   }
 
   private startExpandAnimation(nodeId: NodeId): void {
