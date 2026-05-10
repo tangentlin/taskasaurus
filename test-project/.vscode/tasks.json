@@ -2,6 +2,16 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Check/format",
+      "type": "shell",
+      "command": "npm run check:format"
+    },
+    {
+      "label": "Check/lint",
+      "type": "shell",
+      "command": "npm run check:lint"
+    },
+    {
       "label": "Package",
       "type": "shell",
       "command": "npm run build",

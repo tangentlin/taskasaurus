@@ -152,6 +152,45 @@ describe("getConfig animateExpand", () => {
   });
 });
 
+describe("getConfig showChildIndicator", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("defaults to true when not configured", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => defaultValue),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.showChildIndicator).toBe(true);
+  });
+
+  it("reads false when configured", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => {
+        if (key === "showChildIndicator") return false;
+        return defaultValue;
+      }),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.showChildIndicator).toBe(false);
+  });
+
+  it("falls back to true for non-boolean value", () => {
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: vi.fn().mockImplementation((key: string, defaultValue: unknown) => {
+        if (key === "showChildIndicator") return "no";
+        return defaultValue;
+      }),
+    } as unknown as vscode.WorkspaceConfiguration);
+
+    const config = getConfig();
+    expect(config.showChildIndicator).toBe(true);
+  });
+});
+
 describe("getConfig groupOverrides", () => {
   beforeEach(() => {
     vi.clearAllMocks();
