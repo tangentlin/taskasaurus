@@ -4,6 +4,30 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.7.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.6.0...v1.7.0)
+
+### 🚀 Enhancements
+
+- Add visual boundary cues to expanded sub-lists ([#32](https://github.com/tangentlin/taskasaurus/pull/32))
+
+### 🩹 Fixes
+
+- Strip version bump entries and duplicate contributors from changelog ([#30](https://github.com/tangentlin/taskasaurus/pull/30))
+
+### 📖 Documentation
+
+- Add CLAUDE.md with project conventions and guidelines ([#29](https://github.com/tangentlin/taskasaurus/pull/29))
+- Audit and fix documentation gaps, conflicts, and dead links ([#31](https://github.com/tangentlin/taskasaurus/pull/31))
+
+### 🏡 Chore
+
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+
 ## v1.6.0
 
 [compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.5.0...v1.6.0)
