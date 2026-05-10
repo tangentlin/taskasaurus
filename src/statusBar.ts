@@ -11,8 +11,15 @@ export class StatusBarRenderer {
     uiState: UIState,
     feedbackMap: FeedbackMap = new Map(),
     shortLabelConfig?: ShortLabelConfig,
+    showChildIndicator: boolean = true,
   ): void {
-    const visibleItems = buildVisibleItems(roots, uiState, feedbackMap, shortLabelConfig);
+    const visibleItems = buildVisibleItems(
+      roots,
+      uiState,
+      feedbackMap,
+      shortLabelConfig,
+      showChildIndicator,
+    );
 
     // Reconcile: reuse existing items where possible
     const newNodeIdToItem = new Map<NodeId, vscode.StatusBarItem>();
@@ -32,6 +39,7 @@ export class StatusBarRenderer {
 
       item.text = vi.label;
       item.tooltip = vi.tooltip;
+      item.color = vi.tinted ? new vscode.ThemeColor("disabledForeground") : undefined;
       item.command = { command: COMMAND_ID, title: "", arguments: [vi.commandArgs] };
       item.show();
 
