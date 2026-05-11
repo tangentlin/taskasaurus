@@ -1,7 +1,7 @@
 {
   "name": "taskasaurus",
   "displayName": "Taskasaurus",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "A status-bar task launcher strip for repositories with many tasks",
   "categories": [
     "Other"
@@ -108,7 +108,7 @@
           "type": "boolean",
           "default": true,
           "description": "Show the leading arrow on child items in expanded groups.",
-          "markdownDescription": "Show the leading arrow (`→`) on child items when a group is expanded.\n\nDisable this for a cleaner look — the muted text color and trailing divider still visually distinguish child items from root items.\n\n**Default:** `true`"
+          "markdownDescription": "Show the leading arrow (`→`) on child items when a group is expanded.\n\nDisable this for a cleaner look — the trailing divider still marks where the sub-list ends.\n\n**Default:** `true`"
         },
         "taskasaurus.autoCollapseTimeout": {
           "type": "integer",

@@ -147,18 +147,6 @@ describe("buildVisibleItems", () => {
     expect(items[3].nodeId).toBe("divider::parent::Test");
   });
 
-  it("tints expanded children but leaves parent, divider, and root leaves untinted", () => {
-    const roots = [createParent("Test", ["Test: unit", "Test: e2e"]), createRootLeaf("Build")];
-    const uiState: UIState = { expandedGroupId: "parent::Test" };
-    const items = buildVisibleItems(roots, uiState);
-
-    expect(items[0].tinted).toBeUndefined(); // parent
-    expect(items[1].tinted).toBe(true); // child
-    expect(items[2].tinted).toBe(true); // child
-    expect(items[3].tinted).toBeUndefined(); // divider — bright so it reads as a boundary
-    expect(items[4].tinted).toBeUndefined(); // root leaf after group
-  });
-
   it("emits a trailing divider for a single-child group", () => {
     const roots = [createParent("Test", ["Test: only"])];
     const uiState: UIState = { expandedGroupId: "parent::Test" };
