@@ -28,7 +28,6 @@ Manages the pool of VS Code status bar items and computes their labels, tooltips
 - `render()`: calls `buildVisibleItems()` to get the desired state, then reconciles:
   - Reuses existing items by `nodeId` when priority has not changed.
   - Recreates items when priority changes (priority is read-only after `createStatusBarItem()`).
-  - Sets `item.color` to `new vscode.ThemeColor("disabledForeground")` when `VisibleItem.tinted` is true, otherwise resets to `undefined`. The reset matters during reconciliation: a reused item that was a tinted child in the previous render must drop its color when it becomes a non-child (e.g., on collapse).
   - Disposes items no longer present in the visible set.
 - `dispose()`: disposes all status bar items and clears internal maps.
 
@@ -36,7 +35,7 @@ Manages the pool of VS Code status bar items and computes their labels, tooltips
 
 Pure functions with no VS Code runtime dependency (testable without the extension host):
 
-- `buildVisibleItems(roots, uiState, feedbackMap?, shortLabelConfig?, showChildIndicator = true)`: iterates root nodes, emits a `VisibleItem` per visible node. When a parent is expanded (`uiState.expandedGroupId === node.id`), emits child items immediately after it, then a trailing **divider item** that marks the end of the sub-list. Child items carry `tinted: true`; the divider does not (it's intentionally rendered in the default bright foreground so it stands out as a boundary against the dim children). The divider's `nodeId` is `divider::<parentId>`, its label is `│` (U+2502 BOX DRAWINGS LIGHT VERTICAL), and its `commandArgs.nodeId` points back to the parent so clicking it toggles collapse via the existing parent click handler. Its priority is `lastChildPriority - 1` so it sits between the last child and the next root in the status bar. The optional `showChildIndicator` flag (read from `taskasaurus.showChildIndicator`, default `true`) is forwarded to `composeChildLeafLabel` to toggle the leading `$(arrow-small-right)` on each child.
+- `buildVisibleItems(roots, uiState, feedbackMap?, shortLabelConfig?, showChildIndicator = true)`: iterates root nodes, emits a `VisibleItem` per visible node. When a parent is expanded (`uiState.expandedGroupId === node.id`), emits child items immediately after it, then a trailing **divider item** that marks the end of the sub-list. The divider's `nodeId` is `divider::<parentId>`, its label is `│` (U+2502 BOX DRAWINGS LIGHT VERTICAL), and its `commandArgs.nodeId` points back to the parent so clicking it toggles collapse via the existing parent click handler. Its priority is `lastChildPriority - 1` so it sits between the last child and the next root in the status bar. The optional `showChildIndicator` flag (read from `taskasaurus.showChildIndicator`, default `true`) is forwarded to `composeChildLeafLabel` to toggle the leading `$(arrow-small-right)` on each child.
 - `computePriority()`: assigns priority bands so items sort correctly in the status bar. Root item `i` gets priority `10000 - i*100`. Child `j` under root `i` gets `10000 - i*100 - 50 - j`.
 - `composeParentLabel()`: formats `[feedbackIcon|taskIcon] Label $(chevron-right|chevron-down)`. Feedback icon takes precedence over task icon.
 - `composeRootLeafLabel()`: formats `[feedbackIcon|taskIcon] Label`.
@@ -67,12 +66,10 @@ flowchart LR
 
 | Type               | Location                | Description                                                                           |
 | ------------------ | ----------------------- | ------------------------------------------------------------------------------------- |
-| `VisibleItem`      | `src/statusBarModel.ts` | `{ nodeId, label, tooltip, priority, commandArgs, tinted? }`                          |
+| `VisibleItem`      | `src/statusBarModel.ts` | `{ nodeId, label, tooltip, priority, commandArgs }`                                   |
 | `ShortLabelConfig` | `src/statusBarModel.ts` | `{ globalDefault: boolean, delimiter: string, groupOverrides: Map<string, boolean> }` |
 | `FeedbackMap`      | `src/statusBarModel.ts` | `Map<string, TaskFeedback>`                                                           |
 | `COMMAND_ID`       | `src/statusBarModel.ts` | `"taskasaurus.clickNode"`                                                             |
-
-The optional `tinted` flag on `VisibleItem` is set to `true` on every expanded child. The renderer maps it to the `disabledForeground` `ThemeColor` so children read as a faintly muted band, framing the sub-list visually.
 
 ## Invariants and Failure Modes
 

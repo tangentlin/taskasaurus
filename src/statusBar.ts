@@ -39,7 +39,6 @@ export class StatusBarRenderer {
 
       item.text = vi.label;
       item.tooltip = vi.tooltip;
-      item.color = vi.tinted ? new vscode.ThemeColor("disabledForeground") : undefined;
       item.command = { command: COMMAND_ID, title: "", arguments: [vi.commandArgs] };
       item.show();
 
