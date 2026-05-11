@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import type { RootNode, NodeId, UIState } from "./types";
 import { buildVisibleItems, COMMAND_ID, FeedbackMap, ShortLabelConfig } from "./statusBarModel";
 
+const TINTED_COLOR = new vscode.ThemeColor("disabledForeground");
+
 export class StatusBarRenderer {
   private items: vscode.StatusBarItem[] = [];
   private nodeIdToItem = new Map<NodeId, vscode.StatusBarItem>();
@@ -39,7 +41,7 @@ export class StatusBarRenderer {
 
       item.text = vi.label;
       item.tooltip = vi.tooltip;
-      item.color = vi.tinted ? new vscode.ThemeColor("disabledForeground") : undefined;
+      item.color = vi.tinted ? TINTED_COLOR : undefined;
       item.command = { command: COMMAND_ID, title: "", arguments: [vi.commandArgs] };
       item.show();
 
