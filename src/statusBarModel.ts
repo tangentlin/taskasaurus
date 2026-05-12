@@ -15,10 +15,11 @@ export type VisibleItem = {
   tooltip: string;
   priority: number;
   commandArgs: { nodeId: string };
-  tinted?: boolean;
 };
 
 const COMMAND_ID = "taskasaurus.clickNode";
+const DIVIDER_LABEL = "│";
+const DIVIDER_NODE_PREFIX = "divider::";
 
 function getFeedbackIcon(feedback: TaskFeedback | undefined): string | undefined {
   if (!feedback) return undefined;
@@ -202,18 +203,16 @@ export function buildVisibleItems(
             ),
             priority: computePriority(i, j),
             commandArgs: { nodeId: child.id },
-            tinted: true,
           });
         }
         if (childCount > 0) {
-          // Divider sits between the last child and the next root item, marking the
-          // visual boundary of the expanded group. Clicking it toggles the parent
-          // (reuses the parent's click handler via commandArgs). Untinted so the
-          // bright vertical bar reads as a sharp boundary against the dim children.
+          // Divider sits between the last child and the next root, marking the visual
+          // boundary of the expanded group. Clicking it toggles the parent (reuses the
+          // parent's click handler via commandArgs).
           const lastChildPriority = computePriority(i, childCount - 1);
           items.push({
-            nodeId: `divider::${node.id}`,
-            label: "│",
+            nodeId: `${DIVIDER_NODE_PREFIX}${node.id}`,
+            label: DIVIDER_LABEL,
             tooltip: `End of '${node.label}'`,
             priority: lastChildPriority - 1,
             commandArgs: { nodeId: node.id },
