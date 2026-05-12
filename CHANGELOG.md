@@ -4,6 +4,21 @@ All notable changes to Taskasaurus will be documented in this file.
 
 This changelog is automatically generated from [Conventional Commits](https://www.conventionalcommits.org/) using [changelogen](https://github.com/unjs/changelogen).
 
+## v1.8.0
+
+[compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.7.0...v1.8.0)
+
+### 🩹 Fixes
+
+- Remove tinted text on expanded children (low contrast) ([#34](https://github.com/tangentlin/taskasaurus/pull/34))
+
+### 🏡 Chore
+
+
+### ❤️ Contributors
+
+- Tianzhen Lin (Tangent) <tangent@usa.net>
+
 ## v1.7.0
 
 [compare changes](https://github.com/tangentlin/taskasaurus/compare/v1.6.0...v1.7.0)
